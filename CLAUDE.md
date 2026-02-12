@@ -33,7 +33,7 @@ PDF Upload (local) -> PDF Type Detection -> Text Extraction (digital) or OCR API
 ### Tech Stack
 - **Desktop framework:** Tauri v2 (Rust backend, React frontend)
 - **Frontend:** React + TypeScript + Recharts
-- **Testing:** Vitest + React Testing Library + jsdom (70 tests across 9 files)
+- **Testing:** Vitest + React Testing Library + jsdom (93 tests across 11 files)
 - **Fonts:** Inter (UI), JetBrains Mono (numbers/data)
 - **Database:** SQLite (local, single-file, via tauri-plugin-sql)
 - **PDF text extraction (digital):** Rust PDF libraries (pdf-extract, lopdf) or sidecar Python with pdfplumber
@@ -81,38 +81,48 @@ PDF Upload (local) -> PDF Type Detection -> Text Extraction (digital) or OCR API
 - State returns vary significantly; consider starting federal-only
 
 ## UI Design
-- **Dark mode first** — deep navy palette (`#0f1219` bg, `#1e2433` surfaces, `#818cf8` accent)
+- **Dark mode first** — Cron.com-inspired warm palette (`#0f0d0a` bg, `#1e1c18` surfaces, `#ff4700` orange accent)
 - **Key numbers** — borderless tabular layout: metric labels as rows, tax years as columns
-- **Charts** — Recharts LineChart with styled dark tooltips; colors: indigo (income), red (tax), green (refund), amber (owed)
+- **Charts** — Recharts LineChart with styled dark tooltips; colors: orange (income), coral (tax), green (refund), amber (owed)
 - **Widget system** — `src/widgets/registry.ts` array; add new widget = add one entry + component file
 - **CSS variables** throughout `App.css` for consistent theming
+- **Chatbot** — Bottom-anchored panel aligned with content area, Claude API with streaming
 
 ## Key Files
 - `app/src/App.tsx` — main component, state management, upload/delete handlers
+- `app/src/App.css` — all styles, CSS variables for theming
 - `app/src/db/database.ts` — SQLite access layer (getDb, getAllReturns, insertReturn, deleteReturn, buildSummary)
 - `app/src/db/mockExtraction.ts` — temporary mock that generates plausible data from filename (to be replaced)
 - `app/src/widgets/registry.ts` — widget registry pattern for extensibility
 - `app/src/widgets/KeyNumbersWidget.tsx` — tabular key numbers display
 - `app/src/widgets/YearOverYearChart.tsx` — YoY line chart
-- `app/src/components/` — Dashboard, UploadButton, ReturnsList
+- `app/src/components/Chatbot/` — ChatbotPanel, ChatbotInput, ChatbotMessage components
+- `app/src/components/Settings/` — SettingsPanel for API key configuration
+- `app/src/services/claude.ts` — Claude API client with streaming
+- `app/src/services/taxContext.ts` — Serializes tax data for LLM context
 - `app/src/test/fixtures.ts` — shared test data factories (makeReturn, makeField, makeSummary, etc.)
 - `app/src-tauri/src/lib.rs` — Rust backend with SQLite migrations and plugin registration
-- `app/src-tauri/capabilities/default.json` — Tauri permissions (must include sql:allow-execute, sql:allow-select)
-- `test-data/generate_sample_returns.py` — reportlab script to generate filled 1040 PDFs
+- `plans/` — Execution plans for Linear issues (created by `/plan` command)
 
 ## Current Status
-MVP functional and verified end-to-end. Dark mode UI with Inter/JetBrains Mono fonts. Key numbers in tabular layout, YoY line charts, upload/delete working. 70 tests passing. Currently uses mock extraction (generates plausible data from filename).
+MVP functional with chatbot integrated. Cron.com-inspired dark UI with Inter/JetBrains Mono fonts. Key numbers tabular layout, YoY line charts, chatbot with Claude API streaming. 93 tests passing. GitHub repo: https://github.com/rohan-r1/TaxVisualizer
 
 ## Next Steps
-1. **Fix `/wrapup` slash command** — created at `.claude/skills/wrapup/SKILL.md` but not recognized; debug
-2. **UI Refinement** — Polish layout, spacing, responsiveness
-3. **Chatbot Integration** — Chat panel + LLM API (ephemeral) + tax data context injection
+1. **ROH-12 (Urgent):** Fix chatbot response disappearing bug — responses appear briefly then vanish
+2. **ROH-10:** Implement always-visible chatbot input that expands on focus (plan ready at `plans/ROH-10.md`)
+3. **ROH-11:** Move upload button to sidebar below returns list
 4. **Real PDF Extraction** — Replace mock with tiered hybrid pipeline (pdfplumber for digital, OCR for scanned, LLM validation)
 5. **Confidence/Review Flow** — Flag low-confidence fields for user correction
 
 ## Git Commits
 - Do NOT include `Co-Authored-By` lines in commit messages
 - Keep commit messages concise and descriptive
+
+## Linear Workflow
+Custom slash commands for issue tracking (require `LINEAR_API_KEY` and `LINEAR_TEAM_ID` env vars):
+- `/create-issue <description>` — Create a new Linear issue
+- `/plan ROH-XX` — Create execution plan (planning only, does NOT execute)
+- `/execute` — Execute the most recent plan, updating task status as you go
 
 ## Roles
 - PM makes all product/UX decisions

@@ -1,5 +1,35 @@
 # Work Log
 
+## 2026-02-11 (Session 2)
+
+### Work Done
+- Executed ROH-9: Updated color scheme to Cron.com aesthetic
+  - Warm brown-black backgrounds (`#0f0d0a`, `#161412`, `#1e1c18`)
+  - Orange-red accent (`#ff4700`), amber warning (`#ffaa00`)
+  - Updated `app/src/App.css` and `app/src/widgets/YearOverYearChart.tsx`
+- Created plan for ROH-10 (chatbot always-visible input that expands on focus) at `plans/ROH-10.md`
+- Updated `/plan` slash command to explicitly NOT auto-execute after planning
+- Created Linear issue ROH-12: Bug where chatbot response appears briefly then disappears
+- Updated ROH-11: Changed upload button position from top of sidebar to below returns list
+- Initialized git repository and pushed to GitHub: https://github.com/rohan-r1/TaxVisualizer
+- Created `SETUP.md` with setup instructions for new machines
+- Added git commit guidelines to CLAUDE.md (no Co-Authored-By lines)
+
+### Decisions Made
+- Color scheme changed from pastel zinc to Cron.com-inspired warm browns with orange accents
+- Commits should not include Co-Authored-By attribution lines
+
+### Issues Encountered
+- LINEAR_TEAM_ID environment variable was set to "ROH" but API requires UUID — used teams query to get correct UUID
+- Accidentally started executing after `/plan` approved — fixed by updating skill instructions
+
+### Next Steps
+- Execute ROH-10: Chatbot always-visible input
+- Investigate ROH-12: Chatbot response disappearing bug (urgent)
+- Execute ROH-11: Move upload button to sidebar
+
+---
+
 ## 2026-02-11
 
 ### Work Done
