@@ -1,0 +1,36 @@
+{
+  "tax_year": "2024",
+  "filing_status": "Head of Household",
+  "first_name": "Maria",
+  "last_name": "Garcia",
+  "ssn": "000-00-0004",
+  "summary": {
+    "total_income": 96290,
+    "agi": 69154,
+    "taxable_income": 33710,
+    "total_tax": 15348,
+    "total_payments": 14000,
+    "refund": 0,
+    "amount_owed": 1348,
+    "effective_tax_rate": 22.19,
+    "deduction_type": "standard",
+    "deduction_amount": 21900,
+    "qbi_deduction": 13544,
+    "self_employment": {
+      "gross_income": 142000,
+      "business_expenses": 46600,
+      "net_profit": 95400,
+      "se_tax": 13472,
+      "expense_breakdown": {
+        "advertising": 3200,
+        "car_expenses": 6800,
+        "insurance": 4200,
+        "office_expenses": 2400,
+        "rent": 18000,
+        "supplies": 3500,
+        "utilities": 2800,
+        "other": 5700
+      }
+    }
+  }
+}

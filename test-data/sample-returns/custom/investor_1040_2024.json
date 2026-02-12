@@ -1,0 +1,31 @@
+{
+  "tax_year": "2024",
+  "filing_status": "Married Filing Jointly",
+  "first_name": "Robert",
+  "last_name": "Smith",
+  "ssn": "000-00-0002",
+  "summary": {
+    "total_income": 225100,
+    "agi": 219100,
+    "taxable_income": 180900,
+    "total_tax": 26856,
+    "total_payments": 32000,
+    "refund": 5144,
+    "amount_owed": 0,
+    "effective_tax_rate": 12.26,
+    "deduction_type": "itemized",
+    "deduction_amount": 38200,
+    "itemized_breakdown": {
+      "state_local_taxes": 10000,
+      "mortgage_interest": 14200,
+      "charitable_contributions": 8500,
+      "medical_dental": 5500
+    },
+    "investment_income": {
+      "taxable_interest": 3200,
+      "qualified_dividends": 8500,
+      "ordinary_dividends": 12400,
+      "capital_gains": 24500
+    }
+  }
+}
