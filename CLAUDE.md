@@ -110,6 +110,10 @@ MVP functional and verified end-to-end. Dark mode UI with Inter/JetBrains Mono f
 4. **Real PDF Extraction** — Replace mock with tiered hybrid pipeline (pdfplumber for digital, OCR for scanned, LLM validation)
 5. **Confidence/Review Flow** — Flag low-confidence fields for user correction
 
+## Git Commits
+- Do NOT include `Co-Authored-By` lines in commit messages
+- Keep commit messages concise and descriptive
+
 ## Roles
 - PM makes all product/UX decisions
 - CTO advises on technical approach and builds application
