@@ -123,3 +123,81 @@ export function makeMultiYearData() {
 
   return { returns, fields, summaries };
 }
+
+/** Creates Schedule A (Itemized Deductions) fields */
+export function makeScheduleAFields(returnId: number, values: {
+  medical?: number;
+  salt?: number;
+  mortgageInterest?: number;
+  charity?: number;
+  total?: number;
+} = {}): ExtractedField[] {
+  const v = {
+    medical: 3500,
+    salt: 10000,
+    mortgageInterest: 12000,
+    charity: 5000,
+    total: 30500,
+    ...values,
+  };
+
+  let fieldId = returnId * 100 + 50;
+  return [
+    { id: fieldId++, return_id: returnId, field_key: "sched_a_medical", field_label: "Medical and dental expenses", field_value: v.medical.toString(), field_type: "number", category: "schedule_a", line_number: "1", confidence: 1.0, needs_review: 0 },
+    { id: fieldId++, return_id: returnId, field_key: "sched_a_salt", field_label: "State and local taxes (SALT)", field_value: v.salt.toString(), field_type: "number", category: "schedule_a", line_number: "5d", confidence: 1.0, needs_review: 0 },
+    { id: fieldId++, return_id: returnId, field_key: "sched_a_mortgage_interest", field_label: "Home mortgage interest", field_value: v.mortgageInterest.toString(), field_type: "number", category: "schedule_a", line_number: "8a", confidence: 1.0, needs_review: 0 },
+    { id: fieldId++, return_id: returnId, field_key: "sched_a_charity", field_label: "Gifts to charity", field_value: v.charity.toString(), field_type: "number", category: "schedule_a", line_number: "11", confidence: 1.0, needs_review: 0 },
+    { id: fieldId++, return_id: returnId, field_key: "sched_a_total", field_label: "Total itemized deductions", field_value: v.total.toString(), field_type: "number", category: "schedule_a", line_number: "17", confidence: 1.0, needs_review: 0 },
+  ];
+}
+
+/** Creates Schedule C (Self-Employment) fields */
+export function makeScheduleCFields(returnId: number, values: {
+  grossReceipts?: number;
+  cogs?: number;
+  grossProfit?: number;
+  expenses?: number;
+  netProfit?: number;
+} = {}): ExtractedField[] {
+  const v = {
+    grossReceipts: 50000,
+    cogs: 10000,
+    grossProfit: 40000,
+    expenses: 15000,
+    netProfit: 25000,
+    ...values,
+  };
+
+  let fieldId = returnId * 100 + 60;
+  return [
+    { id: fieldId++, return_id: returnId, field_key: "sched_c_gross_receipts", field_label: "Gross receipts or sales", field_value: v.grossReceipts.toString(), field_type: "number", category: "schedule_c", line_number: "1", confidence: 1.0, needs_review: 0 },
+    { id: fieldId++, return_id: returnId, field_key: "sched_c_cogs", field_label: "Cost of goods sold", field_value: v.cogs.toString(), field_type: "number", category: "schedule_c", line_number: "4", confidence: 1.0, needs_review: 0 },
+    { id: fieldId++, return_id: returnId, field_key: "sched_c_gross_profit", field_label: "Gross profit", field_value: v.grossProfit.toString(), field_type: "number", category: "schedule_c", line_number: "5", confidence: 1.0, needs_review: 0 },
+    { id: fieldId++, return_id: returnId, field_key: "sched_c_expenses", field_label: "Total expenses", field_value: v.expenses.toString(), field_type: "number", category: "schedule_c", line_number: "28", confidence: 1.0, needs_review: 0 },
+    { id: fieldId++, return_id: returnId, field_key: "sched_c_net_profit", field_label: "Net profit (or loss)", field_value: v.netProfit.toString(), field_type: "number", category: "schedule_c", line_number: "31", confidence: 1.0, needs_review: 0 },
+  ];
+}
+
+/** Creates Schedule D (Capital Gains/Losses) fields */
+export function makeScheduleDFields(returnId: number, values: {
+  shortTermGain?: number;
+  longTermGain?: number;
+  netGain?: number;
+  carryover?: number;
+} = {}): ExtractedField[] {
+  const v = {
+    shortTermGain: 2000,
+    longTermGain: 8000,
+    netGain: 10000,
+    carryover: 0,
+    ...values,
+  };
+
+  let fieldId = returnId * 100 + 70;
+  return [
+    { id: fieldId++, return_id: returnId, field_key: "sched_d_short_term", field_label: "Short-term capital gain/loss", field_value: v.shortTermGain.toString(), field_type: "number", category: "schedule_d", line_number: "7", confidence: 1.0, needs_review: 0 },
+    { id: fieldId++, return_id: returnId, field_key: "sched_d_long_term", field_label: "Long-term capital gain/loss", field_value: v.longTermGain.toString(), field_type: "number", category: "schedule_d", line_number: "15", confidence: 1.0, needs_review: 0 },
+    { id: fieldId++, return_id: returnId, field_key: "sched_d_net", field_label: "Net capital gain (or loss)", field_value: v.netGain.toString(), field_type: "number", category: "schedule_d", line_number: "16", confidence: 1.0, needs_review: 0 },
+    { id: fieldId++, return_id: returnId, field_key: "sched_d_carryover", field_label: "Capital loss carryover", field_value: v.carryover.toString(), field_type: "number", category: "schedule_d", line_number: "21", confidence: 1.0, needs_review: 0 },
+  ];
+}

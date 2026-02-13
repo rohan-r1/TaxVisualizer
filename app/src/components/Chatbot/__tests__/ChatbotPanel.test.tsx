@@ -10,39 +10,28 @@ describe("ChatbotPanel", () => {
     returns: [makeReturn()],
     fields: { 1: makeFieldSet(1) },
     summaries: [makeSummary()],
-    onClose: vi.fn(),
     onOpenSettings: vi.fn(),
   };
 
-  it("renders with header and title", () => {
-    render(<ChatbotPanel {...defaultProps} />);
+  it("renders in collapsed state by default", () => {
+    const { container } = render(<ChatbotPanel {...defaultProps} />);
 
-    expect(screen.getByText("Tax Assistant")).toBeInTheDocument();
+    expect(container.querySelector(".chatbot-panel.chatbot-collapsed")).toBeInTheDocument();
   });
 
-  it("shows welcome message when no messages", () => {
+  it("shows input bar with placeholder in collapsed state", () => {
     render(<ChatbotPanel {...defaultProps} />);
 
     expect(
-      screen.getByText("Ask me anything about your tax returns!")
+      screen.getByPlaceholderText("Ask me anything about your tax returns!")
     ).toBeInTheDocument();
   });
 
-  it("has settings and close buttons in header", () => {
+  it("has settings button in collapsed state", () => {
     render(<ChatbotPanel {...defaultProps} />);
 
-    const buttons = screen.getAllByRole("button");
-    expect(buttons.length).toBeGreaterThanOrEqual(2);
-  });
-
-  it("calls onClose when close button clicked", () => {
-    const onClose = vi.fn();
-    render(<ChatbotPanel {...defaultProps} onClose={onClose} />);
-
-    const closeButton = screen.getByTitle("Minimize");
-    fireEvent.click(closeButton);
-
-    expect(onClose).toHaveBeenCalled();
+    const settingsButton = screen.getByTitle("Settings");
+    expect(settingsButton).toBeInTheDocument();
   });
 
   it("calls onOpenSettings when settings button clicked", () => {
@@ -55,15 +44,82 @@ describe("ChatbotPanel", () => {
     expect(onOpenSettings).toHaveBeenCalled();
   });
 
-  it("has input field for messages", () => {
-    render(<ChatbotPanel {...defaultProps} />);
+  it("expands when input is focused", () => {
+    const { container } = render(<ChatbotPanel {...defaultProps} />);
 
-    const input = screen.getByPlaceholderText("Ask about your tax returns...");
-    expect(input).toBeInTheDocument();
+    const input = screen.getByPlaceholderText("Ask me anything about your tax returns!");
+    fireEvent.focus(input);
+
+    expect(container.querySelector(".chatbot-panel.chatbot-expanded")).toBeInTheDocument();
   });
 
-  it("renders with correct CSS classes", () => {
+  it("shows header and title in expanded state", () => {
+    render(<ChatbotPanel {...defaultProps} />);
+
+    // Focus to expand
+    const input = screen.getByPlaceholderText("Ask me anything about your tax returns!");
+    fireEvent.focus(input);
+
+    expect(screen.getByText("Tax Assistant")).toBeInTheDocument();
+  });
+
+  it("shows welcome message in expanded state", () => {
+    render(<ChatbotPanel {...defaultProps} />);
+
+    // Focus to expand
+    const input = screen.getByPlaceholderText("Ask me anything about your tax returns!");
+    fireEvent.focus(input);
+
+    // The welcome message appears in the messages area
+    expect(screen.getByText(/Compare my income across years/)).toBeInTheDocument();
+  });
+
+  it("collapses when minimize button is clicked", () => {
     const { container } = render(<ChatbotPanel {...defaultProps} />);
+
+    // First expand
+    const input = screen.getByPlaceholderText("Ask me anything about your tax returns!");
+    fireEvent.focus(input);
+
+    expect(container.querySelector(".chatbot-expanded")).toBeInTheDocument();
+
+    // Click minimize
+    const minimizeButton = screen.getByTitle("Minimize");
+    fireEvent.click(minimizeButton);
+
+    expect(container.querySelector(".chatbot-collapsed")).toBeInTheDocument();
+  });
+
+  it("collapses when clicking outside the panel", async () => {
+    const { container } = render(
+      <div>
+        <div data-testid="outside">Outside area</div>
+        <ChatbotPanel {...defaultProps} />
+      </div>
+    );
+
+    // First expand
+    const input = screen.getByPlaceholderText("Ask me anything about your tax returns!");
+    fireEvent.focus(input);
+
+    expect(container.querySelector(".chatbot-expanded")).toBeInTheDocument();
+
+    // Wait for the click-outside listener to be registered
+    await new Promise((resolve) => setTimeout(resolve, 10));
+
+    // Click outside
+    const outside = screen.getByTestId("outside");
+    fireEvent.mouseDown(outside);
+
+    expect(container.querySelector(".chatbot-collapsed")).toBeInTheDocument();
+  });
+
+  it("renders with correct CSS classes in expanded state", () => {
+    const { container } = render(<ChatbotPanel {...defaultProps} />);
+
+    // Focus to expand
+    const input = screen.getByPlaceholderText("Ask me anything about your tax returns!");
+    fireEvent.focus(input);
 
     expect(container.querySelector(".chatbot-panel")).toBeInTheDocument();
     expect(container.querySelector(".chatbot-header")).toBeInTheDocument();
@@ -111,7 +167,7 @@ describe("ChatbotInput", () => {
     render(<ChatbotInput onSend={vi.fn()} />);
 
     expect(
-      screen.getByPlaceholderText("Ask about your tax returns...")
+      screen.getByPlaceholderText("Ask me anything about your tax returns!")
     ).toBeInTheDocument();
     expect(screen.getByRole("button")).toBeInTheDocument();
   });
@@ -120,7 +176,7 @@ describe("ChatbotInput", () => {
     const onSend = vi.fn();
     render(<ChatbotInput onSend={onSend} />);
 
-    const input = screen.getByPlaceholderText("Ask about your tax returns...");
+    const input = screen.getByPlaceholderText("Ask me anything about your tax returns!");
     fireEvent.change(input, { target: { value: "What was my tax?" } });
     fireEvent.submit(input.closest("form")!);
 
@@ -131,7 +187,7 @@ describe("ChatbotInput", () => {
     const onSend = vi.fn();
     render(<ChatbotInput onSend={onSend} />);
 
-    const input = screen.getByPlaceholderText("Ask about your tax returns...") as HTMLTextAreaElement;
+    const input = screen.getByPlaceholderText("Ask me anything about your tax returns!") as HTMLTextAreaElement;
     fireEvent.change(input, { target: { value: "Test message" } });
     fireEvent.submit(input.closest("form")!);
 
@@ -142,7 +198,7 @@ describe("ChatbotInput", () => {
     const onSend = vi.fn();
     render(<ChatbotInput onSend={onSend} />);
 
-    const input = screen.getByPlaceholderText("Ask about your tax returns...");
+    const input = screen.getByPlaceholderText("Ask me anything about your tax returns!");
     fireEvent.submit(input.closest("form")!);
 
     expect(onSend).not.toHaveBeenCalled();
@@ -151,7 +207,7 @@ describe("ChatbotInput", () => {
   it("disables input when disabled prop is true", () => {
     render(<ChatbotInput onSend={vi.fn()} disabled />);
 
-    const input = screen.getByPlaceholderText("Ask about your tax returns...");
+    const input = screen.getByPlaceholderText("Ask me anything about your tax returns!");
     expect(input).toBeDisabled();
   });
 

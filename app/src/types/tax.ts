@@ -33,7 +33,10 @@ export type FieldCategory =
   | "credits"
   | "payments"
   | "refund_owed"
-  | "filing_info";
+  | "filing_info"
+  | "schedule_a"
+  | "schedule_c"
+  | "schedule_d";
 
 /** Key numbers displayed in the MVP summary */
 export interface ReturnSummary {

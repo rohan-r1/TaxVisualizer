@@ -38,7 +38,7 @@ export function ChatbotInput({ onSend, disabled = false }: ChatbotInputProps) {
         value={value}
         onChange={(e) => setValue(e.target.value)}
         onKeyDown={handleKeyDown}
-        placeholder="Ask about your tax returns..."
+        placeholder="Ask me anything about your tax returns!"
         disabled={disabled}
         rows={1}
       />

@@ -22,7 +22,6 @@ function App() {
   const [summaries, setSummaries] = useState<ReturnSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [chatbotOpen, setChatbotOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   const loadData = useCallback(async () => {
@@ -93,20 +92,10 @@ function App() {
   }
 
   return (
-    <div className={`app ${chatbotOpen ? "chatbot-open" : ""}`}>
+    <div className="app">
       <header className="app-header">
         <h1>TaxVisualizer</h1>
         <div className="app-header-actions">
-          <button
-            className="header-chat-btn"
-            onClick={() => setChatbotOpen(!chatbotOpen)}
-            title={chatbotOpen ? "Close chat" : "Open chat"}
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
-            </svg>
-            <span>Chat</span>
-          </button>
           <UploadButton onFileSelected={handleFileSelected} />
         </div>
       </header>
@@ -131,16 +120,13 @@ function App() {
                 summaries={summaries}
               />
             </section>
-            {/* Chatbot panel - aligned with content */}
-            {chatbotOpen && (
-              <ChatbotPanel
-                returns={returns}
-                fields={fields}
-                summaries={summaries}
-                onClose={() => setChatbotOpen(false)}
-                onOpenSettings={() => setSettingsOpen(true)}
-              />
-            )}
+            {/* Chatbot panel - always visible, expands on focus */}
+            <ChatbotPanel
+              returns={returns}
+              fields={fields}
+              summaries={summaries}
+              onOpenSettings={() => setSettingsOpen(true)}
+            />
           </div>
         </main>
       </div>
