@@ -1,5 +1,43 @@
 # Work Log
 
+## 2026-02-14
+
+### Work Done
+- Implemented Python sidecar for real PDF extraction (ROH-16)
+  - Created `extract.py` with pdfplumber-based coordinate extraction
+  - Built year-specific field mappings for Form 1040 (2018-2025)
+  - Configured Tauri v2 shell permissions with sidecar scope
+  - Created TypeScript service (`pdfExtractor.ts`) to invoke sidecar
+  - Added PyInstaller build script for bundling executable
+- Fixed Tauri sidecar permissions issue
+  - Root cause: `shell:allow-execute` needs object format with `allow` array, not just string
+  - Added sidecar scope: `{ "identifier": "shell:allow-execute", "allow": [{ "name": "binaries/extract", "sidecar": true, "args": true }] }`
+- Calibrated 2018 Form 1040 mapping against official IRS template
+  - Fixed incorrect field labels (was calling wages "total_income", etc.)
+  - Corrected bounding box coordinates for amount_owed (line 22)
+  - Tested extraction on 2018 and 2019 sample PDFs — working correctly
+- Created Linear issue ROH-22: Review extracted fields to display in summary
+  - Currently parsing 14 fields but only displaying 9 in KeyNumbersWidget
+- Created learning note explaining sidecar pattern (`learning-notes/2026-02-12-python-sidecar.md`)
+- Pushed all changes to GitHub (commit `1bdb55e`)
+
+### Decisions Made
+- Use Python sidecar with pdfplumber instead of pdfjs-dist (better layout preservation)
+- Coordinate-based extraction with year-specific mappings for Form 1040
+- Fall back to mock extraction if sidecar is unavailable
+
+### Issues Encountered
+- pdfjs-dist text extraction doesn't preserve Form 1040 layout well enough for reliable extraction
+- Official IRS template PDFs have different page structure than sample filled PDFs (coversheet adds page)
+- Field value 1,663 was being captured as "applied_to_next_year" instead of "amount_owed" — fixed by adjusting y-coordinates
+
+### Next Steps
+- ROH-22: Review which extracted fields to display in summary
+- Calibrate 2020-2024 Form 1040 mappings
+- ROH-15: Encryption at rest with SQLCipher
+
+---
+
 ## 2026-02-12
 
 ### Work Done
