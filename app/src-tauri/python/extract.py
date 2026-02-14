@@ -250,6 +250,7 @@ Examples:
     python extract.py /path/to/tax_return_2018.pdf
     python extract.py --pretty /path/to/1040.pdf
     python extract.py --years
+    python extract.py --accuracy-report test-data/sample-returns/
 
 Output is JSON printed to stdout.
         """
@@ -279,12 +280,25 @@ Output is JSON printed to stdout.
         help="Include raw text in output for debugging"
     )
 
+    parser.add_argument(
+        "--accuracy-report",
+        metavar="DIR",
+        help="Generate accuracy report for test PDFs in DIR"
+    )
+
     args = parser.parse_args()
 
     # Handle --years flag
     if args.years:
         years = get_supported_years()
         print(json.dumps({"supported_years": years}))
+        return
+
+    # Handle --accuracy-report flag
+    if args.accuracy_report:
+        from tests.test_accuracy import generate_accuracy_report
+        report = generate_accuracy_report(args.accuracy_report)
+        print(report.format_report())
         return
 
     # Require pdf_path if not just listing years

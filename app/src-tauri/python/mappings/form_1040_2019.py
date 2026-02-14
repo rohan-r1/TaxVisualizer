@@ -1,5 +1,5 @@
 """
-Form 1040 (2019) field mappings - CALIBRATED.
+Form 1040 (2019) field mappings - BACKFILLED to full coverage.
 
 Calibrated against: 1040_2019_sample.pdf
 Page dimensions: 612 x 792 points
@@ -7,6 +7,25 @@ Page dimensions: 612 x 792 points
 The 2019 Form 1040 returned to a more traditional 2-page layout.
 Page 0: Income, adjustments, deductions
 Page 1: Tax computation, payments, refund/owed
+
+Line structure for 2019 Form 1040:
+- Line 1: Wages, salaries, tips
+- Lines 2a/2b: Tax-exempt/taxable interest
+- Lines 3a/3b: Qualified/ordinary dividends
+- Lines 4a/4b: IRA distributions
+- Lines 5a/5b: Pensions and annuities
+- Lines 6a/6b: Social security benefits
+- Line 7a: Capital gain/loss
+- Line 7b: Total income
+- Line 8a: Adjustments
+- Line 8b: AGI
+- Lines 9-10: Standard/itemized deduction
+- Line 11a: QBI deduction
+- Line 11b: Taxable income
+- Line 12: Tax
+- Line 13: Total tax
+- Lines 14-18: Payments
+- Lines 19-23: Refund/owed
 
 Coordinate system:
 - Origin (0, 0) is top-left of the page
@@ -47,6 +66,42 @@ FIELDS = {
         "line": "3b",
     },
 
+    # Line 4b: IRA distributions (taxable)
+    "ira_distributions": {
+        "page": 0,
+        "bbox": (535, 375, 575, 387),
+        "label": "IRA distributions",
+        "category": "income",
+        "line": "4b",
+    },
+
+    # Line 5b: Pensions (taxable)
+    "pensions": {
+        "page": 0,
+        "bbox": (535, 387, 575, 399),
+        "label": "Pensions and annuities",
+        "category": "income",
+        "line": "5b",
+    },
+
+    # Line 6b: Social security benefits (taxable)
+    "social_security": {
+        "page": 0,
+        "bbox": (535, 399, 575, 411),
+        "label": "Social security benefits",
+        "category": "income",
+        "line": "6b",
+    },
+
+    # Line 7a: Capital gain or loss
+    "capital_gains": {
+        "page": 0,
+        "bbox": (523, 410, 575, 422),
+        "label": "Capital gain or loss",
+        "category": "income",
+        "line": "7a",
+    },
+
     # Line 7b: Total income - Value: 529,351
     "total_income": {
         "page": 0,
@@ -56,6 +111,15 @@ FIELDS = {
         "line": "7b",
     },
 
+    # Line 8a: Adjustments to income
+    "adjustments": {
+        "page": 0,
+        "bbox": (523, 446, 575, 458),
+        "label": "Adjustments to income",
+        "category": "income",
+        "line": "8a",
+    },
+
     # Line 8b: Adjusted gross income - Value: 529,351
     "agi": {
         "page": 0,
@@ -63,6 +127,24 @@ FIELDS = {
         "label": "Adjusted gross income",
         "category": "income",
         "line": "8b",
+    },
+
+    # Line 9/10: Standard or itemized deduction
+    "deductions": {
+        "page": 0,
+        "bbox": (523, 482, 575, 494),
+        "label": "Deductions",
+        "category": "deductions",
+        "line": "9",
+    },
+
+    # Line 11a: QBI deduction
+    "qbi_deduction": {
+        "page": 0,
+        "bbox": (523, 494, 575, 506),
+        "label": "QBI deduction",
+        "category": "deductions",
+        "line": "11a",
     },
 
     # Line 11b: Taxable income - Value: 499,450
@@ -94,6 +176,15 @@ FIELDS = {
         "line": "12b",
     },
 
+    # Line 13a: Child tax credit
+    "child_tax_credit": {
+        "page": 1,
+        "bbox": (440, 62, 480, 74),
+        "label": "Child tax credit",
+        "category": "credits",
+        "line": "13a",
+    },
+
     # Line 13b: Total tax - Value: 125,189
     "total_tax": {
         "page": 1,
@@ -103,7 +194,7 @@ FIELDS = {
         "line": "13b",
     },
 
-    # Line 18d: Federal income tax withheld - Value: 2,000
+    # Line 18a: Federal income tax withheld
     "federal_withholding": {
         "page": 1,
         "bbox": (440, 183, 480, 195),
@@ -112,11 +203,20 @@ FIELDS = {
         "line": "18d",
     },
 
+    # Line 18b: Estimated tax payments
+    "estimated_payments": {
+        "page": 1,
+        "bbox": (440, 195, 480, 207),
+        "label": "Estimated tax payments",
+        "category": "payments",
+        "line": "18e",
+    },
+
     # Line 18e: Total other payments - Value: 2,000
-    "total_other_payments": {
+    "other_payments": {
         "page": 1,
         "bbox": (534, 194, 574, 206),
-        "label": "Total other payments",
+        "label": "Other payments",
         "category": "payments",
         "line": "18e",
     },

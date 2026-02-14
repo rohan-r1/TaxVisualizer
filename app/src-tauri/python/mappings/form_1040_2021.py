@@ -1,5 +1,5 @@
 """
-Form 1040 (2021) field mappings - CALIBRATED.
+Form 1040 (2021) field mappings - BACKFILLED to full coverage.
 
 Calibrated against: 1040_2021_sample.pdf
 Page dimensions: 612 x 792 points
@@ -7,6 +7,25 @@ Page dimensions: 612 x 792 points
 The 2021 Form 1040 has a layout similar to 2020.
 Page 0: Income, adjustments, deductions
 Page 1: Tax computation, payments, refund/owed
+
+Line structure for 2021 Form 1040:
+- Line 1: Total wages (1a-1z format)
+- Lines 2a/2b: Tax-exempt/taxable interest
+- Lines 3a/3b: Qualified/ordinary dividends
+- Lines 4a/4b: IRA distributions
+- Lines 5a/5b: Pensions and annuities
+- Lines 6a/6b: Social security benefits
+- Line 7: Capital gain or loss
+- Line 8: Other income
+- Line 9: Total income
+- Line 10: Adjustments
+- Line 11: AGI
+- Line 12: Standard/itemized deduction
+- Line 13: QBI deduction
+- Line 15: Taxable income
+- Lines 16-24: Tax computation
+- Lines 25-33: Payments
+- Lines 34-37: Refund/owed
 
 Coordinate system:
 - Origin (0, 0) is top-left of the page
@@ -47,6 +66,51 @@ FIELDS = {
         "line": "3b",
     },
 
+    # Line 4b: IRA distributions (taxable)
+    "ira_distributions": {
+        "page": 0,
+        "bbox": (537, 430, 577, 442),
+        "label": "IRA distributions",
+        "category": "income",
+        "line": "4b",
+    },
+
+    # Line 5b: Pensions (taxable)
+    "pensions": {
+        "page": 0,
+        "bbox": (537, 442, 577, 454),
+        "label": "Pensions and annuities",
+        "category": "income",
+        "line": "5b",
+    },
+
+    # Line 6b: Social security benefits (taxable)
+    "social_security": {
+        "page": 0,
+        "bbox": (537, 454, 577, 466),
+        "label": "Social security benefits",
+        "category": "income",
+        "line": "6b",
+    },
+
+    # Line 7: Capital gain or loss
+    "capital_gains": {
+        "page": 0,
+        "bbox": (531, 466, 577, 478),
+        "label": "Capital gain or loss",
+        "category": "income",
+        "line": "7",
+    },
+
+    # Line 8: Other income
+    "other_income": {
+        "page": 0,
+        "bbox": (531, 478, 577, 490),
+        "label": "Other income",
+        "category": "income",
+        "line": "8",
+    },
+
     # Line 9: Total income - Value: 64,730
     "total_income": {
         "page": 0,
@@ -54,6 +118,15 @@ FIELDS = {
         "label": "Total income",
         "category": "income",
         "line": "9",
+    },
+
+    # Line 10: Adjustments to income
+    "adjustments": {
+        "page": 0,
+        "bbox": (531, 518, 577, 530),
+        "label": "Adjustments to income",
+        "category": "income",
+        "line": "10",
     },
 
     # Line 11: Adjusted gross income - Value: 55,647
@@ -72,6 +145,15 @@ FIELDS = {
         "label": "Deductions",
         "category": "deductions",
         "line": "12",
+    },
+
+    # Line 13: QBI deduction
+    "qbi_deduction": {
+        "page": 0,
+        "bbox": (531, 587, 577, 599),
+        "label": "QBI deduction",
+        "category": "deductions",
+        "line": "13",
     },
 
     # Line 15: Taxable income - Value: 35,300
@@ -94,6 +176,15 @@ FIELDS = {
         "line": "16",
     },
 
+    # Line 17: Schedule 2 tax
+    "schedule_2_tax": {
+        "page": 1,
+        "bbox": (537, 78, 577, 90),
+        "label": "Schedule 2 tax",
+        "category": "tax_computation",
+        "line": "17",
+    },
+
     # Line 18: Tax before credits - Value: 3,542
     "tax_before_credits": {
         "page": 1,
@@ -101,6 +192,24 @@ FIELDS = {
         "label": "Tax before credits",
         "category": "tax_computation",
         "line": "18",
+    },
+
+    # Line 19: Child tax credit
+    "child_tax_credit": {
+        "page": 1,
+        "bbox": (537, 107, 577, 119),
+        "label": "Child tax credit",
+        "category": "credits",
+        "line": "19",
+    },
+
+    # Line 20: Schedule 3 credits
+    "schedule_3_credits": {
+        "page": 1,
+        "bbox": (537, 119, 577, 131),
+        "label": "Schedule 3 credits",
+        "category": "credits",
+        "line": "20",
     },
 
     # Line 22: Tax after credits - Value: 3,542
@@ -139,10 +248,19 @@ FIELDS = {
         "line": "25d",
     },
 
+    # Line 26: Estimated tax payments
+    "estimated_payments": {
+        "page": 1,
+        "bbox": (537, 257, 577, 269),
+        "label": "Estimated tax payments",
+        "category": "payments",
+        "line": "26",
+    },
+
     # Line 32: Other payments - Value: 8,036
     "other_payments": {
         "page": 1,
-        "bbox": (537, 259, 577, 271),
+        "bbox": (537, 405, 577, 417),
         "label": "Other payments",
         "category": "payments",
         "line": "32",
@@ -155,6 +273,15 @@ FIELDS = {
         "label": "Total payments",
         "category": "payments",
         "line": "33",
+    },
+
+    # Line 34: Amount overpaid
+    "overpaid": {
+        "page": 1,
+        "bbox": (537, 477, 577, 489),
+        "label": "Amount overpaid",
+        "category": "refund_owed",
+        "line": "34",
     },
 
     # Line 35a: Refund - Value: 3,162

@@ -1,5 +1,5 @@
 """
-Form 1040 (2020) field mappings - CALIBRATED.
+Form 1040 (2020) field mappings - BACKFILLED to full coverage.
 
 Calibrated against: 1040_2020_sample.pdf
 Page dimensions: 612 x 792 points
@@ -7,6 +7,25 @@ Page dimensions: 612 x 792 points
 The 2020 Form 1040 has a similar layout to 2019.
 Page 0: Income, adjustments, deductions
 Page 1: Tax computation, payments, refund/owed
+
+Line structure for 2020 Form 1040:
+- Line 1: Total wages (new layout with 1a-1z)
+- Lines 2a/2b: Tax-exempt/taxable interest
+- Lines 3a/3b: Qualified/ordinary dividends
+- Lines 4a/4b: IRA distributions
+- Lines 5a/5b: Pensions and annuities
+- Lines 6a/6b: Social security benefits
+- Line 7: Capital gain or loss
+- Line 8: Other income
+- Line 9: Total income
+- Line 10: Adjustments
+- Line 11: AGI
+- Line 12: Standard/itemized deduction
+- Line 13: QBI deduction
+- Line 15: Taxable income
+- Lines 16-24: Tax computation
+- Lines 25-33: Payments
+- Lines 34-37: Refund/owed
 
 Coordinate system:
 - Origin (0, 0) is top-left of the page
@@ -47,6 +66,51 @@ FIELDS = {
         "line": "3b",
     },
 
+    # Line 4b: IRA distributions (taxable)
+    "ira_distributions": {
+        "page": 0,
+        "bbox": (535, 393, 575, 405),
+        "label": "IRA distributions",
+        "category": "income",
+        "line": "4b",
+    },
+
+    # Line 5b: Pensions (taxable)
+    "pensions": {
+        "page": 0,
+        "bbox": (535, 405, 575, 417),
+        "label": "Pensions and annuities",
+        "category": "income",
+        "line": "5b",
+    },
+
+    # Line 6b: Social security benefits (taxable)
+    "social_security": {
+        "page": 0,
+        "bbox": (535, 417, 575, 429),
+        "label": "Social security benefits",
+        "category": "income",
+        "line": "6b",
+    },
+
+    # Line 7: Capital gain or loss
+    "capital_gains": {
+        "page": 0,
+        "bbox": (523, 428, 575, 440),
+        "label": "Capital gain or loss",
+        "category": "income",
+        "line": "7",
+    },
+
+    # Line 8: Other income
+    "other_income": {
+        "page": 0,
+        "bbox": (523, 440, 575, 452),
+        "label": "Other income",
+        "category": "income",
+        "line": "8",
+    },
+
     # Line 9: Total income - Value: 504,331
     "total_income": {
         "page": 0,
@@ -54,6 +118,15 @@ FIELDS = {
         "label": "Total income",
         "category": "income",
         "line": "9",
+    },
+
+    # Line 10: Adjustments to income
+    "adjustments": {
+        "page": 0,
+        "bbox": (523, 500, 575, 512),
+        "label": "Adjustments to income",
+        "category": "income",
+        "line": "10",
     },
 
     # Line 11: Adjusted gross income - Value: 504,331
@@ -72,6 +145,15 @@ FIELDS = {
         "label": "Deductions",
         "category": "deductions",
         "line": "12",
+    },
+
+    # Line 13: QBI deduction
+    "qbi_deduction": {
+        "page": 0,
+        "bbox": (523, 537, 575, 549),
+        "label": "QBI deduction",
+        "category": "deductions",
+        "line": "13",
     },
 
     # Line 15: Taxable income - Value: 479,531
@@ -112,6 +194,24 @@ FIELDS = {
         "line": "18",
     },
 
+    # Line 19: Child tax credit
+    "child_tax_credit": {
+        "page": 1,
+        "bbox": (521, 74, 573, 86),
+        "label": "Child tax credit",
+        "category": "credits",
+        "line": "19",
+    },
+
+    # Line 20: Schedule 3 credits
+    "schedule_3_credits": {
+        "page": 1,
+        "bbox": (521, 86, 573, 98),
+        "label": "Schedule 3 credits",
+        "category": "credits",
+        "line": "20",
+    },
+
     # Line 22: Tax after credits - Value: 117,421
     "tax_after_credits": {
         "page": 1,
@@ -148,6 +248,24 @@ FIELDS = {
         "line": "25d",
     },
 
+    # Line 26: Estimated tax payments
+    "estimated_payments": {
+        "page": 1,
+        "bbox": (545, 218, 573, 230),
+        "label": "Estimated tax payments",
+        "category": "payments",
+        "line": "26",
+    },
+
+    # Line 32: Other payments
+    "other_payments": {
+        "page": 1,
+        "bbox": (545, 278, 573, 290),
+        "label": "Other payments",
+        "category": "payments",
+        "line": "32",
+    },
+
     # Line 33: Total payments - Value: 500
     "total_payments": {
         "page": 1,
@@ -164,6 +282,15 @@ FIELDS = {
         "label": "Amount overpaid",
         "category": "refund_owed",
         "line": "34",
+    },
+
+    # Line 35a: Refund
+    "refund": {
+        "page": 1,
+        "bbox": (545, 314, 573, 326),
+        "label": "Refund",
+        "category": "refund_owed",
+        "line": "35a",
     },
 
     # Line 37: Amount you owe - Value: 468

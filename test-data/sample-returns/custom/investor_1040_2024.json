@@ -1,31 +1,47 @@
 {
-  "tax_year": "2024",
+  "pdf_file": "investor_1040_2024.pdf",
+  "tax_year": 2024,
   "filing_status": "Married Filing Jointly",
-  "first_name": "Robert",
-  "last_name": "Smith",
-  "ssn": "000-00-0002",
-  "summary": {
-    "total_income": 225100,
-    "agi": 219100,
-    "taxable_income": 180900,
-    "total_tax": 26856,
-    "total_payments": 32000,
-    "refund": 5144,
-    "amount_owed": 0,
-    "effective_tax_rate": 12.26,
-    "deduction_type": "itemized",
-    "deduction_amount": 38200,
-    "itemized_breakdown": {
-      "state_local_taxes": 10000,
-      "mortgage_interest": 14200,
-      "charitable_contributions": 8500,
-      "medical_dental": 5500
-    },
-    "investment_income": {
-      "taxable_interest": 3200,
-      "qualified_dividends": 8500,
-      "ordinary_dividends": 12400,
-      "capital_gains": 24500
+  "fields": {
+    "wages": { "expected": "175500", "tolerance": 0 },
+    "taxable_interest": { "expected": "3200", "tolerance": 0 },
+    "ordinary_dividends": { "expected": "12400", "tolerance": 0 },
+    "ira_distributions": { "expected": null, "allow_null": true },
+    "pensions": { "expected": null, "allow_null": true },
+    "social_security": { "expected": null, "allow_null": true },
+    "capital_gains": { "expected": "24500", "tolerance": 0 },
+    "other_income": { "expected": null, "allow_null": true },
+    "total_income": { "expected": "225100", "tolerance": 0 },
+    "adjustments": { "expected": "6000", "tolerance": 0 },
+    "agi": { "expected": "219100", "tolerance": 0 },
+    "deductions": { "expected": "38200", "tolerance": 0 },
+    "qbi_deduction": { "expected": null, "allow_null": true },
+    "taxable_income": { "expected": "180900", "tolerance": 0 },
+    "total_tax": { "expected": "26856", "tolerance": 0 },
+    "federal_withholding": { "expected": "32000", "tolerance": 0 },
+    "estimated_payments": { "expected": null, "allow_null": true },
+    "other_payments": { "expected": null, "allow_null": true },
+    "total_payments": { "expected": "32000", "tolerance": 0 },
+    "refund": { "expected": "5144", "tolerance": 0 },
+    "amount_owed": { "expected": null, "allow_null": true }
+  },
+  "metadata": {
+    "scenario": "Married couple with investments and itemized deductions",
+    "edge_cases": ["investment_income", "itemized_deductions", "refund_scenario"],
+    "original_data": {
+      "first_name": "Robert",
+      "last_name": "Smith",
+      "effective_tax_rate": 12.26,
+      "deduction_type": "itemized",
+      "itemized_breakdown": {
+        "state_local_taxes": 10000,
+        "mortgage_interest": 14200,
+        "charitable_contributions": 8500,
+        "medical_dental": 5500
+      },
+      "investment_income": {
+        "qualified_dividends": 8500
+      }
     }
   }
 }

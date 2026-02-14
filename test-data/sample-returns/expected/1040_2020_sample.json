@@ -1,0 +1,128 @@
+{
+  "pdf_file": "1040_2020_sample.pdf",
+  "tax_year": 2020,
+  "filing_status": "Married Filing Jointly",
+  "fields": {
+    "wages": {
+      "expected": "502213",
+      "tolerance": 0
+    },
+    "taxable_interest": {
+      "expected": "2049",
+      "tolerance": 0
+    },
+    "ordinary_dividends": {
+      "expected": "69",
+      "tolerance": 0
+    },
+    "ira_distributions": {
+      "expected": null,
+      "allow_null": true
+    },
+    "pensions": {
+      "expected": null,
+      "allow_null": true
+    },
+    "social_security": {
+      "expected": null,
+      "allow_null": true
+    },
+    "capital_gains": {
+      "expected": null,
+      "allow_null": true
+    },
+    "other_income": {
+      "expected": "0",
+      "tolerance": 0
+    },
+    "total_income": {
+      "expected": "504331",
+      "tolerance": 0
+    },
+    "adjustments": {
+      "expected": null,
+      "allow_null": true
+    },
+    "agi": {
+      "expected": "504331",
+      "tolerance": 0
+    },
+    "deductions": {
+      "expected": "24800",
+      "tolerance": 0
+    },
+    "qbi_deduction": {
+      "expected": null,
+      "allow_null": true
+    },
+    "taxable_income": {
+      "expected": "479531",
+      "tolerance": 0
+    },
+    "tax_amount": {
+      "expected": "117421",
+      "tolerance": 0
+    },
+    "schedule_2_tax": {
+      "expected": "32",
+      "tolerance": 0
+    },
+    "tax_before_credits": {
+      "expected": "117453",
+      "tolerance": 0
+    },
+    "child_tax_credit": {
+      "expected": null,
+      "allow_null": true
+    },
+    "schedule_3_credits": {
+      "expected": "117421",
+      "tolerance": 0
+    },
+    "tax_after_credits": {
+      "expected": "117421",
+      "tolerance": 0
+    },
+    "other_taxes": {
+      "expected": "32",
+      "tolerance": 0
+    },
+    "total_tax": {
+      "expected": "32",
+      "tolerance": 0
+    },
+    "federal_withholding": {
+      "expected": "500",
+      "tolerance": 0
+    },
+    "estimated_payments": {
+      "expected": null,
+      "allow_null": true
+    },
+    "other_payments": {
+      "expected": null,
+      "allow_null": true
+    },
+    "total_payments": {
+      "expected": "500",
+      "tolerance": 0
+    },
+    "overpaid": {
+      "expected": "468",
+      "tolerance": 0
+    },
+    "refund": {
+      "expected": "0",
+      "tolerance": 0
+    },
+    "amount_owed": {
+      "expected": "468",
+      "tolerance": 0
+    }
+  },
+  "metadata": {
+    "scenario": "Sample 2020 return",
+    "source": "1040_sample",
+    "auto_generated": true
+  }
+}

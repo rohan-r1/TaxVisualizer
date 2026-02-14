@@ -129,8 +129,11 @@ class TestExtractForm1040:
 
         # Check specific field values
         fields_by_key = {f["key"]: f for f in result["fields"]}
-        assert fields_by_key["total_income"]["value"] == "30262"
-        assert fields_by_key["total_tax"]["value"] == "46014"
+        assert fields_by_key["wages"]["value"] == "30262"
+        assert fields_by_key["total_income"]["value"] == "74944"
+        assert fields_by_key["agi"]["value"] == "74944"
+        assert fields_by_key["total_tax"]["value"] == "6635"
+        assert fields_by_key["amount_owed"]["value"] == "1663"
 
     def test_extract_2019(self):
         pdf_path = os.path.join(TEST_DATA_DIR, "1040_2019_sample.pdf")

@@ -1,19 +1,38 @@
 {
-  "tax_year": "2024",
+  "pdf_file": "casual_filer_1040_2024.pdf",
+  "tax_year": 2024,
   "filing_status": "Single",
-  "first_name": "John",
-  "last_name": "Doe",
-  "ssn": "000-00-0001",
-  "summary": {
-    "total_income": 72245,
-    "agi": 72245,
-    "taxable_income": 57645,
-    "total_tax": 8512,
-    "total_payments": 9800,
-    "refund": 1288,
-    "amount_owed": 0,
-    "effective_tax_rate": 11.78,
-    "deduction_type": "standard",
-    "deduction_amount": 14600
+  "fields": {
+    "wages": { "expected": "72245", "tolerance": 0 },
+    "taxable_interest": { "expected": null, "allow_null": true },
+    "ordinary_dividends": { "expected": null, "allow_null": true },
+    "ira_distributions": { "expected": null, "allow_null": true },
+    "pensions": { "expected": null, "allow_null": true },
+    "social_security": { "expected": null, "allow_null": true },
+    "capital_gains": { "expected": null, "allow_null": true },
+    "other_income": { "expected": null, "allow_null": true },
+    "total_income": { "expected": "72245", "tolerance": 0 },
+    "adjustments": { "expected": null, "allow_null": true },
+    "agi": { "expected": "72245", "tolerance": 0 },
+    "deductions": { "expected": "14600", "tolerance": 0 },
+    "qbi_deduction": { "expected": null, "allow_null": true },
+    "taxable_income": { "expected": "57645", "tolerance": 0 },
+    "total_tax": { "expected": "8512", "tolerance": 0 },
+    "federal_withholding": { "expected": "9800", "tolerance": 0 },
+    "estimated_payments": { "expected": null, "allow_null": true },
+    "other_payments": { "expected": null, "allow_null": true },
+    "total_payments": { "expected": "9800", "tolerance": 0 },
+    "refund": { "expected": "1288", "tolerance": 0 },
+    "amount_owed": { "expected": null, "allow_null": true }
+  },
+  "metadata": {
+    "scenario": "W-2 employee with standard deduction",
+    "edge_cases": ["single_income_source", "refund_scenario"],
+    "original_data": {
+      "first_name": "John",
+      "last_name": "Doe",
+      "effective_tax_rate": 11.78,
+      "deduction_type": "standard"
+    }
   }
 }
