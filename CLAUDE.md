@@ -33,7 +33,7 @@ PDF Upload (local) -> PDF Type Detection -> Text Extraction (digital) or OCR API
 ### Tech Stack
 - **Desktop framework:** Tauri v2 (Rust backend, React frontend)
 - **Frontend:** React + TypeScript + Recharts
-- **Testing:** Vitest + React Testing Library + jsdom (93 tests across 11 files)
+- **Testing:** Vitest + React Testing Library + jsdom (112 tests across 11 files)
 - **Fonts:** Inter (UI), JetBrains Mono (numbers/data)
 - **Database:** SQLite (local, single-file, via tauri-plugin-sql)
 - **PDF text extraction (digital):** Rust PDF libraries (pdf-extract, lopdf) or sidecar Python with pdfplumber
@@ -92,7 +92,11 @@ PDF Upload (local) -> PDF Type Detection -> Text Extraction (digital) or OCR API
 - `app/src/App.tsx` — main component, state management, upload/delete handlers
 - `app/src/App.css` — all styles, CSS variables for theming
 - `app/src/db/database.ts` — SQLite access layer (getDb, getAllReturns, insertReturn, deleteReturn, buildSummary)
-- `app/src/db/mockExtraction.ts` — temporary mock that generates plausible data from filename (to be replaced)
+- `app/src/db/mockExtraction.ts` — mock extraction with Form 1040 + Schedules A/C/D fields (fallback when sidecar unavailable)
+- `app/src/services/pdfExtractor.ts` — TypeScript service to invoke Python sidecar
+- `app/src-tauri/python/extract.py` — Python sidecar for PDF extraction with pdfplumber
+- `app/src-tauri/python/mappings/` — Year-specific Form 1040 field coordinate mappings (2018-2025)
+- `app/src-tauri/python/build.py` — PyInstaller build script for sidecar executable
 - `app/src/widgets/registry.ts` — widget registry pattern for extensibility
 - `app/src/widgets/KeyNumbersWidget.tsx` — tabular key numbers display
 - `app/src/widgets/YearOverYearChart.tsx` — YoY line chart
@@ -103,16 +107,16 @@ PDF Upload (local) -> PDF Type Detection -> Text Extraction (digital) or OCR API
 - `app/src/test/fixtures.ts` — shared test data factories (makeReturn, makeField, makeSummary, etc.)
 - `app/src-tauri/src/lib.rs` — Rust backend with SQLite migrations and plugin registration
 - `plans/` — Execution plans for Linear issues (created by `/plan` command)
+- `learning-notes/` — Technical explanations for PM education (created by `/learning-opportunity` command)
 
 ## Current Status
-MVP functional with chatbot integrated. Cron.com-inspired dark UI with Inter/JetBrains Mono fonts. Key numbers tabular layout, YoY line charts, chatbot with Claude API streaming. 93 tests passing. GitHub repo: https://github.com/rohan-r1/TaxVisualizer
+MVP fully functional with real PDF extraction. Python sidecar (pdfplumber) extracts Form 1040 fields using coordinate-based mapping. 2018-2019 forms tested and working. Tauri shell permissions configured for sidecar execution. Chatbot has access to all extracted field data. Cron.com-inspired dark UI. GitHub repo: https://github.com/rohan-r1/TaxVisualizer
 
 ## Next Steps
-1. **ROH-12 (Urgent):** Fix chatbot response disappearing bug — responses appear briefly then vanish
-2. **ROH-10:** Implement always-visible chatbot input that expands on focus (plan ready at `plans/ROH-10.md`)
-3. **ROH-11:** Move upload button to sidebar below returns list
-4. **Real PDF Extraction** — Replace mock with tiered hybrid pipeline (pdfplumber for digital, OCR for scanned, LLM validation)
-5. **Confidence/Review Flow** — Flag low-confidence fields for user correction
+1. **ROH-22:** Review extracted fields to display in summary (14 parsed, 9 displayed)
+2. **ROH-16:** Calibrate 2020-2024 form mappings (Tier 2 in progress)
+3. **ROH-15:** Encryption at rest with SQLCipher (plan ready at `plans/ROH-15.md`)
+4. **Confidence/Review Flow** — Flag low-confidence fields for user correction
 
 ## Git Commits
 - Do NOT include `Co-Authored-By` lines in commit messages
@@ -121,8 +125,9 @@ MVP functional with chatbot integrated. Cron.com-inspired dark UI with Inter/Jet
 ## Linear Workflow
 Custom slash commands for issue tracking (require `LINEAR_API_KEY` and `LINEAR_TEAM_ID` env vars):
 - `/create-issue <description>` — Create a new Linear issue
-- `/plan ROH-XX` — Create execution plan (planning only, does NOT execute)
+- `/plan ROH-XX` — Create execution plan (planning only, does NOT execute); auto-creates sub-issues for phased approaches
 - `/execute` — Execute the most recent plan, updating task status as you go
+- `/learning-opportunity` — Create educational note explaining selected code/concept (saved to `learning-notes/`)
 
 ## Roles
 - PM makes all product/UX decisions

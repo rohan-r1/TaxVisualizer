@@ -2,7 +2,9 @@
 
 **Issue:** [ROH-15](https://linear.app/rohanr/issue/ROH-15/encryption-at-rest-for-local-tax-data-sqlcipher)
 **Priority:** Low
-**Status:** Planning
+**Status:** Deferred
+
+> **Deferred 2026-02-12:** Official `tauri-plugin-sql` does not yet support SQLCipher. Waiting for official support rather than switching to community forks. See [feature request #2528](https://github.com/tauri-apps/plugins-workspace/issues/2528).
 
 ---
 

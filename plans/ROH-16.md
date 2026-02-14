@@ -2,7 +2,14 @@
 
 **Issue:** [ROH-16](https://linear.app/rohanr/issue/ROH-16/real-pdf-extraction-pipeline-replace-mock-extraction)
 **Priority:** Low
-**Status:** Planning
+**Status:** In Progress (Tier 2 working for 2018-2019)
+
+> **Update (2026-02-14):** Python sidecar with pdfplumber is now working. Tier 2 extraction functional for 2018-2019 Form 1040s. Tauri shell permissions configured correctly. Mappings calibrated against sample PDFs and official IRS templates.
+>
+> **Remaining work:**
+> - Calibrate mappings for 2020-2024 forms
+> - Tier 3 (OCR) and Tier 4 (LLM validation) still deferred
+> - See ROH-22 for field display review
 
 ---
 
@@ -79,35 +86,32 @@ The tiered approach balances speed, cost, and accuracy optimally.
 
 ## Task List
 
-- 🔴 **Set up Python sidecar** — Tauri sidecar for PDF processing
-  - 🔴 Create `python/` directory with extraction scripts
-  - 🔴 Configure Tauri to bundle Python sidecar
-  - 🔴 Create Rust command to invoke sidecar
-- 🔴 **Tier 1: PDF type detection** — Detect digital vs scanned
-  - 🔴 Implement text extraction attempt
-  - 🔴 Classify based on extractable text ratio
-- 🔴 **Tier 2: Digital PDF extraction** — pdfplumber
-  - 🔴 Parse Form 1040 layout (identify boxes by position)
-  - 🔴 Map PDF coordinates to field keys
-  - 🔴 Extract values with high confidence
-- 🔴 **Tier 3: Scanned PDF OCR** — Azure Document Intelligence
-  - 🔴 Integrate Azure API client
-  - 🔴 Handle ephemeral data (no storage on Azure side)
-  - 🔴 Map OCR results to field schema
-- 🔴 **Tier 4: LLM validation** — Cross-check extracted data
-  - 🔴 Build validation prompt (check math, relationships)
-  - 🔴 Integrate Claude API for validation
-  - 🔴 Adjust confidence scores based on validation
-- 🔴 **Tier 5: Confidence-based review** — Flag uncertain items
-  - 🔴 Apply 95% threshold for needs_review flag
-  - 🔴 (Future: Build review UI for user corrections)
-- 🔴 **Replace mockExtraction** — Wire up real pipeline
-  - 🔴 Update App.tsx to use new extraction
-  - 🔴 Handle extraction progress/status
-- 🔴 **Add tests** — Test extraction components
-- 🔴 **Run full test suite** — Ensure no regressions
+- 🟢 **Set up Python sidecar** — pdfplumber-based extraction
+  - 🟢 Create extract.py with coordinate-based field extraction
+  - 🟢 Create build.py for PyInstaller bundling
+  - 🟢 Configure Tauri shell permissions (sidecar scope in capabilities)
+  - 🟢 Create TypeScript service (`app/src/services/pdfExtractor.ts`)
+- 🟢 **Tier 2: Digital PDF extraction** — pdfplumber
+  - 🟢 Year-specific field mappings (2018-2025 templates created)
+  - 🟢 Calibrate 2018 mapping against official IRS template
+  - 🟢 Calibrate 2019 mapping (tested, working)
+  - 🟡 Calibrate 2020-2024 mappings (templates exist, need verification)
+  - 🟢 Extract values with confidence scores (0.9 for extracted, 0.5 for missing)
+- 🟢 **Integrate with app** — Replace mock extraction
+  - 🟢 Update App.tsx to use sidecar extraction
+  - 🟢 Fallback to mock if sidecar unavailable
+  - 🟢 Handle extraction errors gracefully
+- ⏸️ **Tier 3: Scanned PDF OCR** — *Deferred*
+  - ⏸️ Integrate Azure Document Intelligence
+  - ⏸️ Handle ephemeral data (no storage on Azure side)
+- ⏸️ **Tier 4: LLM validation** — *Deferred*
+  - ⏸️ Build validation prompt (check math, relationships)
+  - ⏸️ Adjust confidence scores based on validation
+- ⏸️ **Tier 5: Confidence-based review** — *Deferred*
+  - ⏸️ Apply 95% threshold for needs_review flag
+  - ⏸️ Build review UI for user corrections
 
-**Legend:** 🔴 Not Started | 🟡 In Progress | 🟢 Complete
+**Legend:** 🔴 Not Started | 🟡 In Progress | 🟢 Complete | ⏸️ Deferred
 
 ## Major Changes
 

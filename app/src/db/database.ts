@@ -32,7 +32,7 @@ export async function insertReturn(
      VALUES ($1, $2, $3, $4, $5)`,
     [taxYear, pdfPath, pdfFilename, filingStatus ?? null, extractionMethod ?? null]
   );
-  return result.lastInsertId;
+  return result.lastInsertId ?? 0;
 }
 
 export async function deleteReturn(id: number): Promise<void> {

@@ -51,12 +51,14 @@ export function YearOverYearChart({ summaries }: WidgetProps) {
               borderRadius: 8,
               color: "#ffffff",
             }}
-            formatter={(value: number) =>
-              value.toLocaleString("en-US", {
-                style: "currency",
-                currency: "USD",
-                minimumFractionDigits: 0,
-              })
+            formatter={(value) =>
+              typeof value === "number"
+                ? value.toLocaleString("en-US", {
+                    style: "currency",
+                    currency: "USD",
+                    minimumFractionDigits: 0,
+                  })
+                : String(value)
             }
           />
           <Legend wrapperStyle={{ color: "#cccccc" }} />

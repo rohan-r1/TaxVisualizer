@@ -3,7 +3,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import App from "./App";
 import * as database from "./db/database";
-import { makeReturn, makeFieldSet, makeSummary } from "./test/fixtures";
+import { makeReturn, makeFieldSet } from "./test/fixtures";
 
 // Mock the database module
 vi.mock("./db/database", async () => {
@@ -21,6 +21,11 @@ vi.mock("./db/database", async () => {
 // Mock the dialog
 vi.mock("@tauri-apps/plugin-dialog", () => ({
   open: vi.fn(),
+}));
+
+// Mock pdfExtraction to avoid pdfjs-dist DOMMatrix error in Node
+vi.mock("./services/pdfExtraction", () => ({
+  extractFromPdf: vi.fn().mockRejectedValue(new Error("Mock: use mock extraction")),
 }));
 
 const mockedDb = vi.mocked(database);

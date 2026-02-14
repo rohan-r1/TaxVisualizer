@@ -13,6 +13,7 @@ import {
   buildSummary,
 } from "./db/database";
 import { mockExtract } from "./db/mockExtraction";
+import { extractPdf, checkSidecarAvailable } from "./services/pdfExtractor";
 import type { TaxReturn, ExtractedField, ReturnSummary } from "./types/tax";
 import "./App.css";
 
@@ -21,8 +22,10 @@ function App() {
   const [fields, setFields] = useState<Record<number, ExtractedField[]>>({});
   const [summaries, setSummaries] = useState<ReturnSummary[]>([]);
   const [loading, setLoading] = useState(true);
+  const [extracting, setExtracting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [sidecarAvailable, setSidecarAvailable] = useState<boolean | null>(null);
 
   const loadData = useCallback(async () => {
     try {
@@ -44,14 +47,50 @@ function App() {
 
   useEffect(() => {
     loadData();
+    // Check if the Python sidecar is available
+    checkSidecarAvailable().then(setSidecarAvailable);
   }, [loadData]);
 
   const handleFileSelected = async (path: string, filename: string) => {
     try {
       setError(null);
+      setExtracting(true);
 
-      // Extract data (mock for now, will be replaced by real pipeline)
-      const extracted = mockExtract(filename);
+      let extracted;
+
+      // Try real PDF extraction if sidecar is available
+      if (sidecarAvailable) {
+        console.log("Using Python sidecar for PDF extraction");
+        const result = await extractPdf(path);
+
+        if (result.error) {
+          // Sidecar extraction failed, fall back to mock
+          console.warn("Sidecar extraction failed:", result.error);
+          console.log("Falling back to mock extraction");
+          extracted = mockExtract(filename);
+        } else {
+          // Convert sidecar result to our format
+          // Note: insertFieldsBatch expects key/label/value, not fieldKey/fieldLabel/fieldValue
+          extracted = {
+            year: result.year,
+            filingStatus: result.filing_status,
+            extractionMethod: result.extraction_method,
+            fields: result.fields.map((f) => ({
+              key: f.key,
+              label: f.label,
+              value: f.value,
+              fieldType: "number" as const,
+              category: f.category,
+              lineNumber: f.line_number,
+              confidence: f.confidence,
+            })),
+          };
+        }
+      } else {
+        // Sidecar not available, use mock extraction
+        console.log("Sidecar not available, using mock extraction");
+        extracted = mockExtract(filename);
+      }
 
       // Store in database
       const returnId = await insertReturn(
@@ -74,6 +113,8 @@ function App() {
       } else {
         setError(msg);
       }
+    } finally {
+      setExtracting(false);
     }
   };
 
@@ -89,6 +130,17 @@ function App() {
 
   if (loading) {
     return <div className="app-loading">Loading...</div>;
+  }
+
+  if (extracting) {
+    return (
+      <div className="app-loading">
+        <span>Extracting PDF...</span>
+        <span className="loading-subtext">
+          Analyzing form fields with pdfplumber
+        </span>
+      </div>
+    );
   }
 
   return (

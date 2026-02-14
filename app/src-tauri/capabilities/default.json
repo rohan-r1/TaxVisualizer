@@ -10,6 +10,19 @@
     "fs:default",
     "sql:default",
     "sql:allow-execute",
-    "sql:allow-select"
+    "sql:allow-select",
+    {
+      "identifier": "shell:allow-execute",
+      "allow": [
+        {
+          "name": "binaries/extract",
+          "sidecar": true,
+          "args": true
+        }
+      ]
+    },
+    "shell:allow-spawn",
+    "shell:allow-kill",
+    "shell:allow-stdin-write"
   ]
 }
