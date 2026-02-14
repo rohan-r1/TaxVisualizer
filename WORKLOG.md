@@ -1,5 +1,37 @@
 # Work Log
 
+## 2026-02-15
+
+### Work Done
+- Completed ROH-25: Test data generator with multi-year personas
+  - Rewrote `generate_sample_returns.py` to overlay values onto IRS blank templates
+  - Created two 7-year personas (2018-2024): Alex Chen (software engineer) and Maria Garcia (nurse to admin)
+  - Built TaxCalculator with correct bracket math for all years (2018-2024)
+  - Handled year-specific form layouts (2018 postcard format, 2019+ split pages, coversheet pages)
+  - Generated 14 PDFs + 14 JSON sidecars with expected values
+  - Reorganized test-data/ folder into blank-templates/, generated/, samples/
+  - Fixed coordinate alignment issues through multiple calibration iterations
+- Completed ROH-24: Comprehensive PDF extraction testing framework
+  - Added accuracy tests comparing extracted values against expected JSON sidecars
+
+### Decisions Made
+- Template overlay approach: generate test PDFs by overlaying text onto actual IRS blank templates (vs creating custom layouts)
+- Year-specific field position overrides needed because IRS templates vary in structure
+- Two contrasting personas for comprehensive testing: single→married progression (Alex) vs married→head of household (Maria)
+
+### Issues Encountered
+- IRS templates have different page structures across years (2018/2019 have coversheets, 2020+ don't)
+- Field coordinates calibrated for extraction don't match template positions — created TEMPLATE_FIELD_OVERRIDES
+- Multiple iterations needed to align values with form lines (12pt row height)
+- 2019 capital_gains field was missing from overrides, causing overlap with total_income
+
+### Next Steps
+- Focus on user experience improvements
+- ROH-11: Move upload button to sidebar below returns list
+- ROH-15: Encryption at rest with SQLCipher
+
+---
+
 ## 2026-02-14
 
 ### Work Done

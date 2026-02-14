@@ -97,6 +97,9 @@ PDF Upload (local) -> PDF Type Detection -> Text Extraction (digital) or OCR API
 - `app/src-tauri/python/extract.py` — Python sidecar for PDF extraction with pdfplumber
 - `app/src-tauri/python/mappings/` — Year-specific Form 1040 field coordinate mappings (2018-2025)
 - `app/src-tauri/python/build.py` — PyInstaller build script for sidecar executable
+- `test-data/generate_sample_returns.py` — Test data generator with multi-year personas and tax calculator
+- `test-data/generated/` — Generated test PDFs and JSON sidecars (alex_chen, maria_garcia personas)
+- `test-data/blank-templates/` — IRS official blank Form 1040 templates (2018-2024)
 - `app/src/widgets/registry.ts` — widget registry pattern for extensibility
 - `app/src/widgets/KeyNumbersWidget.tsx` — tabular key numbers display
 - `app/src/widgets/YearOverYearChart.tsx` — YoY line chart
@@ -110,11 +113,11 @@ PDF Upload (local) -> PDF Type Detection -> Text Extraction (digital) or OCR API
 - `learning-notes/` — Technical explanations for PM education (created by `/learning-opportunity` command)
 
 ## Current Status
-MVP fully functional with real PDF extraction. Python sidecar (pdfplumber) extracts Form 1040 fields using coordinate-based mapping. 2018-2019 forms tested and working. Tauri shell permissions configured for sidecar execution. Chatbot has access to all extracted field data. Cron.com-inspired dark UI. GitHub repo: https://github.com/rohan-r1/TaxVisualizer
+MVP fully functional with real PDF extraction and comprehensive test data infrastructure. Python sidecar (pdfplumber) extracts Form 1040 fields using coordinate-based mapping. Test data generator produces multi-year persona sequences (2018-2024) with mathematically-correct tax calculations. Two personas available: Alex Chen (7 years) and Maria Garcia (7 years). Cron.com-inspired dark UI. GitHub repo: https://github.com/rohan-r1/TaxVisualizer
 
 ## Next Steps
-1. **ROH-22:** Review extracted fields to display in summary (14 parsed, 9 displayed)
-2. **ROH-16:** Calibrate 2020-2024 form mappings (Tier 2 in progress)
+1. **User experience improvements** — Focus shifts from infrastructure to UX
+2. **ROH-11:** Move upload button to sidebar below returns list
 3. **ROH-15:** Encryption at rest with SQLCipher (plan ready at `plans/ROH-15.md`)
 4. **Confidence/Review Flow** — Flag low-confidence fields for user correction
 
