@@ -121,7 +121,7 @@ FORM_1040_2018 = {
   - 🟢 Add support for 2018-2025 layouts (8 years fully calibrated)
 - 🟢 **Add tests**
   - 🟢 Unit tests for Python extraction (26 tests passing)
-  - 🔴 Integration tests for sidecar communication (deferred to ROH-19)
+  - ⏸️ Integration tests for sidecar communication — see [ROH-23](https://linear.app/rohanr/issue/ROH-23)
 
 **Legend:** 🔴 Not Started | 🟡 In Progress | 🟢 Complete
 
