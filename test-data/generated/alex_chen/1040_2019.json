@@ -1,0 +1,89 @@
+{
+  "pdf_file": "1040_2019.pdf",
+  "tax_year": 2019,
+  "filing_status": "Single",
+  "fields": {
+    "wages": {
+      "expected": "72000",
+      "tolerance": 0,
+      "allow_null": false
+    },
+    "taxable_interest": {
+      "expected": "120",
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "ordinary_dividends": {
+      "expected": "80",
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "capital_gains": {
+      "expected": null,
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "total_income": {
+      "expected": "72200",
+      "tolerance": 0
+    },
+    "adjustments": {
+      "expected": null,
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "agi": {
+      "expected": "72200",
+      "tolerance": 0
+    },
+    "deductions": {
+      "expected": "12200",
+      "tolerance": 0
+    },
+    "taxable_income": {
+      "expected": "60000",
+      "tolerance": 0
+    },
+    "tax_amount": {
+      "expected": "9058",
+      "tolerance": 0
+    },
+    "child_tax_credit": {
+      "expected": null,
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "total_tax": {
+      "expected": "9058",
+      "tolerance": 0
+    },
+    "federal_withholding": {
+      "expected": "10800",
+      "tolerance": 0
+    },
+    "estimated_payments": {
+      "expected": null,
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "total_payments": {
+      "expected": "10800",
+      "tolerance": 0
+    },
+    "refund": {
+      "expected": "1742",
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "amount_owed": {
+      "expected": null,
+      "tolerance": 0,
+      "allow_null": true
+    }
+  },
+  "metadata": {
+    "persona": "Alex Chen",
+    "scenario": "Year 2019 - Single",
+    "auto_generated": true
+  }
+}

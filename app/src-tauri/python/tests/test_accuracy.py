@@ -408,7 +408,7 @@ def generate_accuracy_report(test_dir: str) -> AccuracyReport:
 TEST_DATA_DIR = os.path.join(
     os.path.dirname(__file__),
     "..", "..", "..", "..",
-    "test-data", "sample-returns"
+    "test-data", "samples"
 )
 
 

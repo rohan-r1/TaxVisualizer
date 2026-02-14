@@ -1,0 +1,89 @@
+{
+  "pdf_file": "1040_2023.pdf",
+  "tax_year": 2023,
+  "filing_status": "Married Filing Jointly",
+  "fields": {
+    "wages": {
+      "expected": "120000",
+      "tolerance": 0,
+      "allow_null": false
+    },
+    "taxable_interest": {
+      "expected": "800",
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "ordinary_dividends": {
+      "expected": "600",
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "capital_gains": {
+      "expected": "3200",
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "total_income": {
+      "expected": "124600",
+      "tolerance": 0
+    },
+    "adjustments": {
+      "expected": null,
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "agi": {
+      "expected": "124600",
+      "tolerance": 0
+    },
+    "deductions": {
+      "expected": "27700",
+      "tolerance": 0
+    },
+    "taxable_income": {
+      "expected": "96900",
+      "tolerance": 0
+    },
+    "tax_amount": {
+      "expected": "11933",
+      "tolerance": 0
+    },
+    "child_tax_credit": {
+      "expected": null,
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "total_tax": {
+      "expected": "11933",
+      "tolerance": 0
+    },
+    "federal_withholding": {
+      "expected": "19000",
+      "tolerance": 0
+    },
+    "estimated_payments": {
+      "expected": null,
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "total_payments": {
+      "expected": "19000",
+      "tolerance": 0
+    },
+    "refund": {
+      "expected": "7067",
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "amount_owed": {
+      "expected": null,
+      "tolerance": 0,
+      "allow_null": true
+    }
+  },
+  "metadata": {
+    "persona": "Alex Chen",
+    "scenario": "Year 2023 - Married Filing Jointly",
+    "auto_generated": true
+  }
+}

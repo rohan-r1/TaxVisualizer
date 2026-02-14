@@ -21,7 +21,7 @@ from mappings import detect_form_year, get_field_mapping, get_supported_years
 TEST_DATA_DIR = os.path.join(
     os.path.dirname(__file__),
     "..", "..", "..", "..",
-    "test-data", "sample-returns"
+    "test-data", "samples", "historical"
 )
 
 

@@ -1,0 +1,89 @@
+{
+  "pdf_file": "1040_2021.pdf",
+  "tax_year": 2021,
+  "filing_status": "Head of Household",
+  "fields": {
+    "wages": {
+      "expected": "105000",
+      "tolerance": 0,
+      "allow_null": false
+    },
+    "taxable_interest": {
+      "expected": "250",
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "ordinary_dividends": {
+      "expected": "300",
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "capital_gains": {
+      "expected": null,
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "total_income": {
+      "expected": "105550",
+      "tolerance": 0
+    },
+    "adjustments": {
+      "expected": null,
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "agi": {
+      "expected": "105550",
+      "tolerance": 0
+    },
+    "deductions": {
+      "expected": "18800",
+      "tolerance": 0
+    },
+    "taxable_income": {
+      "expected": "86750",
+      "tolerance": 0
+    },
+    "tax_amount": {
+      "expected": "13389",
+      "tolerance": 0
+    },
+    "child_tax_credit": {
+      "expected": "6000",
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "total_tax": {
+      "expected": "7389",
+      "tolerance": 0
+    },
+    "federal_withholding": {
+      "expected": "16500",
+      "tolerance": 0
+    },
+    "estimated_payments": {
+      "expected": null,
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "total_payments": {
+      "expected": "16500",
+      "tolerance": 0
+    },
+    "refund": {
+      "expected": "9111",
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "amount_owed": {
+      "expected": null,
+      "tolerance": 0,
+      "allow_null": true
+    }
+  },
+  "metadata": {
+    "persona": "Maria Garcia",
+    "scenario": "Year 2021 - Head of Household",
+    "auto_generated": true
+  }
+}

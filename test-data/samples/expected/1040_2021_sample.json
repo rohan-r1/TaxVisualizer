@@ -1,18 +1,18 @@
 {
-  "pdf_file": "1040_2019_sample.pdf",
-  "tax_year": 2019,
+  "pdf_file": "historical/1040_2021_sample.pdf",
+  "tax_year": 2021,
   "filing_status": "Married Filing Jointly",
   "fields": {
     "wages": {
-      "expected": "526918",
+      "expected": "60500",
       "tolerance": 0
     },
     "taxable_interest": {
-      "expected": "2099",
+      "expected": "322",
       "tolerance": 0
     },
     "ordinary_dividends": {
-      "expected": "334",
+      "expected": "3908",
       "tolerance": 0
     },
     "ira_distributions": {
@@ -31,77 +31,97 @@
       "expected": null,
       "allow_null": true
     },
+    "other_income": {
+      "expected": "3908",
+      "tolerance": 0
+    },
     "total_income": {
-      "expected": "529351",
+      "expected": "64730",
       "tolerance": 0
     },
     "adjustments": {
-      "expected": null,
-      "allow_null": true
+      "expected": "9083",
+      "tolerance": 0
     },
     "agi": {
-      "expected": "529351",
+      "expected": "55647",
       "tolerance": 0
     },
     "deductions": {
-      "expected": null,
-      "allow_null": true
+      "expected": "12550",
+      "tolerance": 0
     },
     "qbi_deduction": {
-      "expected": "29901",
+      "expected": "7797",
       "tolerance": 0
     },
     "taxable_income": {
-      "expected": "499450",
+      "expected": "35300",
       "tolerance": 0
     },
     "tax_amount": {
-      "expected": "125189",
+      "expected": "3542",
       "tolerance": 0
     },
+    "schedule_2_tax": {
+      "expected": null,
+      "allow_null": true
+    },
     "tax_before_credits": {
-      "expected": "125189",
+      "expected": "3542",
       "tolerance": 0
     },
     "child_tax_credit": {
       "expected": null,
       "allow_null": true
     },
-    "total_tax": {
-      "expected": "125189",
-      "tolerance": 0
-    },
-    "federal_withholding": {
-      "expected": "2000",
-      "tolerance": 0
-    },
-    "estimated_payments": {
+    "schedule_3_credits": {
       "expected": null,
       "allow_null": true
     },
-    "other_payments": {
-      "expected": "2000",
+    "tax_after_credits": {
+      "expected": "3542",
       "tolerance": 0
     },
+    "other_taxes": {
+      "expected": "7645",
+      "tolerance": 0
+    },
+    "total_tax": {
+      "expected": "11187",
+      "tolerance": 0
+    },
+    "federal_withholding": {
+      "expected": "29",
+      "tolerance": 0
+    },
+    "estimated_payments": {
+      "expected": "8036",
+      "tolerance": 0
+    },
+    "other_payments": {
+      "expected": null,
+      "allow_null": true
+    },
     "total_payments": {
-      "expected": "2000",
+      "expected": "8065",
       "tolerance": 0
     },
     "overpaid": {
-      "expected": "2000",
-      "tolerance": 0
+      "expected": null,
+      "allow_null": true
     },
     "refund": {
-      "expected": "1500",
+      "expected": "3162",
       "tolerance": 0
     },
     "amount_owed": {
-      "expected": "500",
+      "expected": "40",
       "tolerance": 0
     }
   },
   "metadata": {
-    "scenario": "Sample 2019 return",
+    "scenario": "Sample 2021 return",
     "source": "1040_sample",
     "auto_generated": true
   }
