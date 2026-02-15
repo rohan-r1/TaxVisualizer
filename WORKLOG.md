@@ -8,9 +8,16 @@
   - 2019: Complete rewrite with measured positions from generated PDFs
   - 2020: Fixed total_tax truncation (x0 was missing leading digit)
   - 2021: Complete rewrite with wider x-range for 6-digit numbers
+- ROH-11: Moved upload button from header to sidebar below returns list
 - All Alex Chen returns (2018-2024) now extract correctly
 - All Maria Garcia returns (2019-2024) now extract correctly
 - 151 tests passing
+- Committed and pushed all changes to GitHub
+- Reviewed all issues and plans:
+  - Archived 15 completed plans to `plans/archive/`
+  - Updated ROH-16 status (Tier 2 complete)
+  - Updated ROH-26 status to Complete
+  - 2 active issues remaining: ROH-15 (deferred), ROH-16 (in progress)
 
 ### Debugging Approach
 - Used pdfplumber to inspect exact character positions (x0, mid_y)
@@ -24,8 +31,9 @@
 
 ### Next Steps
 - Fix generator coversheet handling for consistent page structure
-- ROH-11: Move upload button to sidebar below returns list
-- ROH-15: Encryption at rest with SQLCipher
+- ROH-22: Review which extracted fields to display in summary
+- ROH-15: Encryption at rest (waiting for official SQLCipher support)
+- Confidence/review flow for low-confidence extractions
 
 ---
 

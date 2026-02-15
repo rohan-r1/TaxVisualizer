@@ -33,7 +33,7 @@ PDF Upload (local) -> PDF Type Detection -> Text Extraction (digital) or OCR API
 ### Tech Stack
 - **Desktop framework:** Tauri v2 (Rust backend, React frontend)
 - **Frontend:** React + TypeScript + Recharts
-- **Testing:** Vitest + React Testing Library + jsdom (112 tests across 11 files)
+- **Testing:** Vitest + React Testing Library + jsdom (151 tests across 11 files)
 - **Fonts:** Inter (UI), JetBrains Mono (numbers/data)
 - **Database:** SQLite (local, single-file, via tauri-plugin-sql)
 - **PDF text extraction (digital):** Rust PDF libraries (pdf-extract, lopdf) or sidecar Python with pdfplumber
@@ -109,17 +109,22 @@ PDF Upload (local) -> PDF Type Detection -> Text Extraction (digital) or OCR API
 - `app/src/services/taxContext.ts` — Serializes tax data for LLM context
 - `app/src/test/fixtures.ts` — shared test data factories (makeReturn, makeField, makeSummary, etc.)
 - `app/src-tauri/src/lib.rs` — Rust backend with SQLite migrations and plugin registration
-- `plans/` — Execution plans for Linear issues (created by `/plan` command)
+- `plans/` — Active execution plans for Linear issues (created by `/plan` command)
+- `plans/archive/` — Completed plans (15 archived)
 - `learning-notes/` — Technical explanations for PM education (created by `/learning-opportunity` command)
 
 ## Current Status
-MVP fully functional with real PDF extraction and comprehensive test data infrastructure. Python sidecar (pdfplumber) extracts Form 1040 fields using coordinate-based mapping. Test data generator produces multi-year persona sequences (2018-2024) with mathematically-correct tax calculations. Two personas available: Alex Chen (7 years) and Maria Garcia (7 years). Cron.com-inspired dark UI. GitHub repo: https://github.com/rohan-r1/TaxVisualizer
+MVP fully functional with real PDF extraction and comprehensive test data infrastructure. Infrastructure phase complete — extraction, test data, and mapping calibration all working. Python sidecar (pdfplumber) extracts Form 1040 fields (2018-2024) using coordinate-based mapping. Test data generator produces multi-year persona sequences with mathematically-correct tax calculations. Two personas available: Alex Chen (7 years) and Maria Garcia (7 years). Cron.com-inspired dark UI with upload button in sidebar. GitHub repo: https://github.com/rohan-r1/TaxVisualizer
+
+### Active Issues
+- **ROH-15:** Encryption at rest — deferred (waiting for official SQLCipher support in tauri-plugin-sql)
+- **ROH-16:** PDF extraction pipeline — Tier 2 complete; Tier 3 (OCR) and Tier 4 (LLM validation) deferred
 
 ## Next Steps
-1. **User experience improvements** — Focus shifts from infrastructure to UX
-2. **ROH-11:** Move upload button to sidebar below returns list
-3. **ROH-15:** Encryption at rest with SQLCipher (plan ready at `plans/ROH-15.md`)
-4. **Confidence/Review Flow** — Flag low-confidence fields for user correction
+1. **UX improvements** — Focus shifts from infrastructure to user experience
+2. **ROH-22:** Review which extracted fields to display in summary
+3. **Confidence/Review Flow** — Flag low-confidence fields for user correction
+4. **ROH-15:** Monitor for official SQLCipher support, then implement encryption
 
 ## Git Commits
 - Do NOT include `Co-Authored-By` lines in commit messages
