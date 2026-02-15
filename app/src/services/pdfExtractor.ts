@@ -29,6 +29,7 @@ export interface ExtractionResult {
   extraction_method: string;
   fields: ExtractedField[];
   page_count?: number;
+  detected_forms?: string[];
   error?: string;
   supported_years?: number[];
 }

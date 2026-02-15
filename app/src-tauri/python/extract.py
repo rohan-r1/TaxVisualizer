@@ -28,7 +28,7 @@ except ImportError:
     }))
     sys.exit(1)
 
-from mappings import detect_form_year, get_field_mapping, get_supported_years
+from mappings import detect_form_year, detect_schedules, get_field_mapping, get_supported_years
 
 
 def parse_currency(text: str) -> Optional[str]:
@@ -197,11 +197,11 @@ def extract_form_1040(pdf_path: str) -> Dict[str, Any]:
 
                 # Calculate confidence based on whether we got a valid value
                 if value and int(value) >= 0:
-                    confidence = 0.90  # Base confidence for successful extraction
+                    confidence = 0.95  # High confidence for successful extraction
                 elif value:
-                    confidence = 0.85  # Negative values are less common
+                    confidence = 0.90  # Slightly lower for negative values
                 else:
-                    confidence = 0.50  # No value extracted
+                    confidence = 0.50  # No value extracted - needs review
 
                 fields.append({
                     "key": field_key,
@@ -214,12 +214,24 @@ def extract_form_1040(pdf_path: str) -> Dict[str, Any]:
                     "page": page_num,
                 })
 
+            # Detect which schedules are present in the PDF
+            schedules = detect_schedules(pdf)
+
+            # Build the detected_forms list
+            detected_forms = ["Form 1040"]
+            for schedule_type, page_idx in schedules.items():
+                if page_idx is not None:
+                    # Convert schedule_1 -> Schedule 1, schedule_a -> Schedule A, etc.
+                    name = schedule_type.replace("_", " ").title()
+                    detected_forms.append(name)
+
             return {
                 "year": year,
                 "filing_status": filing_status,
                 "extraction_method": "pdfplumber",
                 "fields": fields,
                 "page_count": len(pdf.pages),
+                "detected_forms": detected_forms,
             }
 
     except FileNotFoundError:

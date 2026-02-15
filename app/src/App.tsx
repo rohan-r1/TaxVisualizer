@@ -1,9 +1,14 @@
 import { useState, useEffect, useCallback } from "react";
+import { open } from "@tauri-apps/plugin-dialog";
 import { UploadButton } from "./components/UploadButton";
 import { ReturnsList } from "./components/ReturnsList";
 import { Dashboard } from "./components/Dashboard";
 import { ChatbotPanel } from "./components/Chatbot";
 import { SettingsPanel } from "./components/Settings";
+import {
+  UploadSummaryOverlay,
+  type FormFieldCount,
+} from "./components/UploadSummary";
 import {
   getAllReturns,
   getAllFields,
@@ -12,10 +17,56 @@ import {
   deleteReturn,
   buildSummary,
 } from "./db/database";
-import { extractPdf, checkSidecarAvailable } from "./services/pdfExtractor";
+import {
+  extractPdf,
+  checkSidecarAvailable,
+  type ExtractionResult,
+} from "./services/pdfExtractor";
 import type { TaxReturn, ExtractedField, ReturnSummary } from "./types/tax";
 import type { ChartConfig } from "./types/chart";
 import "./App.css";
+
+/** Pending upload awaiting user confirmation */
+interface PendingUpload {
+  path: string;
+  filename: string;
+  result: ExtractionResult;
+}
+
+/** Build field counts per detected form for the upload summary */
+function buildFormFieldCounts(result: ExtractionResult): FormFieldCount[] {
+  const detectedForms = result.detected_forms || ["Form 1040"];
+  const fields = result.fields;
+
+  // Map category prefixes to form names
+  const categoryToForm: Record<string, string> = {
+    schedule_1: "Schedule 1",
+    schedule_a: "Schedule A",
+    schedule_c: "Schedule C",
+  };
+
+  // Count fields per form
+  const counts: Record<string, number> = {};
+  for (const form of detectedForms) {
+    counts[form] = 0;
+  }
+
+  for (const field of fields) {
+    const formName = categoryToForm[field.category];
+    if (formName && counts[formName] !== undefined) {
+      counts[formName]++;
+    } else {
+      // Default to Form 1040 for non-schedule categories
+      counts["Form 1040"] = (counts["Form 1040"] || 0) + 1;
+    }
+  }
+
+  // Convert to array, keeping detected order
+  return detectedForms.map((form) => ({
+    form,
+    count: counts[form] || 0,
+  }));
+}
 
 function App() {
   const [returns, setReturns] = useState<TaxReturn[]>([]);
@@ -28,6 +79,7 @@ function App() {
   const [sidecarAvailable, setSidecarAvailable] = useState<boolean | null>(null);
   const [customCharts, setCustomCharts] = useState<ChartConfig[]>([]);
   const [hiddenWidgets, setHiddenWidgets] = useState<string[]>([]);
+  const [pendingUpload, setPendingUpload] = useState<PendingUpload | null>(null);
 
   const loadData = useCallback(async () => {
     try {
@@ -72,6 +124,24 @@ function App() {
         throw new Error(`PDF extraction failed: ${result.error}`);
       }
 
+      // Show upload summary overlay for user confirmation
+      setPendingUpload({ path, filename, result });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setError(msg);
+    } finally {
+      setExtracting(false);
+    }
+  };
+
+  const handleConfirmUpload = async () => {
+    if (!pendingUpload) return;
+
+    const { path, filename, result } = pendingUpload;
+
+    try {
+      setError(null);
+
       // Convert sidecar result to our format
       const extracted = {
         year: result.year,
@@ -98,7 +168,8 @@ function App() {
       );
       await insertFieldsBatch(returnId, extracted.fields);
 
-      // Refresh UI
+      // Clear pending upload and refresh UI
+      setPendingUpload(null);
       await loadData();
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
@@ -109,8 +180,23 @@ function App() {
       } else {
         setError(msg);
       }
-    } finally {
-      setExtracting(false);
+      // Keep pending upload open so user can re-upload if desired
+    }
+  };
+
+  const handleCancelUpload = async () => {
+    setPendingUpload(null);
+
+    // Open file dialog directly to save the user a click
+    const selected = await open({
+      multiple: false,
+      filters: [{ name: "PDF", extensions: ["pdf"] }],
+    });
+
+    if (selected) {
+      const path = typeof selected === "string" ? selected : selected;
+      const filename = path.split(/[\\/]/).pop() ?? "unknown.pdf";
+      handleFileSelected(path, filename);
     }
   };
 
@@ -195,6 +281,17 @@ function App() {
       {/* Settings panel */}
       {settingsOpen && (
         <SettingsPanel onClose={() => setSettingsOpen(false)} />
+      )}
+
+      {/* Upload summary overlay */}
+      {pendingUpload && (
+        <UploadSummaryOverlay
+          year={pendingUpload.result.year}
+          filingStatus={pendingUpload.result.filing_status}
+          formFieldCounts={buildFormFieldCounts(pendingUpload.result)}
+          onContinue={handleConfirmUpload}
+          onReUpload={handleCancelUpload}
+        />
       )}
     </div>
   );

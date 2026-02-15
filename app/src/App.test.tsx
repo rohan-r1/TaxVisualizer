@@ -158,6 +158,14 @@ describe("App", () => {
     const user = userEvent.setup();
     await user.click(screen.getByRole("button", { name: /upload tax return/i }));
 
+    // Wait for upload summary overlay to appear
+    await waitFor(() => {
+      expect(screen.getByText("Upload Summary")).toBeInTheDocument();
+    });
+
+    // Click Continue to confirm the upload (which will trigger the UNIQUE constraint error)
+    await user.click(screen.getByRole("button", { name: "Continue" }));
+
     await waitFor(() => {
       expect(
         screen.getByText(/already exists.*delete it first/i)

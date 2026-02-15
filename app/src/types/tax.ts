@@ -34,6 +34,7 @@ export type FieldCategory =
   | "payments"
   | "refund_owed"
   | "filing_info"
+  | "schedule_1"
   | "schedule_a"
   | "schedule_c"
   | "schedule_d";

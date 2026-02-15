@@ -81,3 +81,54 @@ def get_field_mapping(year: int) -> Dict[str, Any]:
 def get_supported_years() -> list:
     """Return list of years with calibrated mappings."""
     return sorted(FORM_MAPPINGS.keys())
+
+
+# Schedule detection patterns
+# Each schedule has multiple patterns to increase detection reliability
+SCHEDULE_PATTERNS: Dict[str, list] = {
+    'schedule_1': [
+        r'Schedule\s*1\s*\(Form\s*1040\)',
+        r'Additional\s+Income\s+and\s+Adjustments\s+to\s+Income',
+    ],
+    'schedule_a': [
+        r'Schedule\s*A\s*\(Form\s*1040\)',
+        r'Itemized\s+Deductions',
+    ],
+    'schedule_c': [
+        r'Schedule\s*C\s*\(Form\s*1040\)',
+        r'Profit\s+or\s+Loss\s+From\s+Business',
+    ],
+}
+
+
+def detect_schedules(pdf) -> Dict[str, Optional[int]]:
+    """
+    Detect which schedules are present in a multi-page PDF.
+
+    Scans each page for schedule identifiers using regex patterns.
+    Returns the page index where each schedule was found, or None if not found.
+
+    Args:
+        pdf: A pdfplumber PDF object
+
+    Returns:
+        Dictionary mapping schedule type to page index (0-based) or None.
+        Example: {'schedule_1': 2, 'schedule_a': 3, 'schedule_c': None}
+    """
+    result: Dict[str, Optional[int]] = {key: None for key in SCHEDULE_PATTERNS}
+
+    for page_idx, page in enumerate(pdf.pages):
+        text = page.extract_text() or ""
+
+        for schedule_type, patterns in SCHEDULE_PATTERNS.items():
+            # Skip if already found this schedule
+            if result[schedule_type] is not None:
+                continue
+
+            # Check each pattern for this schedule
+            for pattern in patterns:
+                if re.search(pattern, text, re.IGNORECASE):
+                    result[schedule_type] = page_idx
+                    break
+
+    return result
