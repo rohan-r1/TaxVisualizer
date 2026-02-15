@@ -20,7 +20,8 @@ export function UploadButton({ onFileSelected }: UploadButtonProps) {
 
   return (
     <button className="upload-btn" onClick={handleClick}>
-      + Upload Tax Return
+      <span className="upload-btn-icon">+</span>
+      <span className="upload-btn-text">Upload Tax Return</span>
     </button>
   );
 }

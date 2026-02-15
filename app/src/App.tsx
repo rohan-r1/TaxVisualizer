@@ -159,8 +159,8 @@ function App() {
       <div className="app-body">
         <main className="app-main">
           <aside className="app-sidebar">
-            <ReturnsList returns={returns} onDelete={handleDelete} />
             <UploadButton onFileSelected={handleFileSelected} />
+            <ReturnsList returns={returns} onDelete={handleDelete} />
           </aside>
           {/* Chatbot panel - full-height left column */}
           <ChatbotPanel
