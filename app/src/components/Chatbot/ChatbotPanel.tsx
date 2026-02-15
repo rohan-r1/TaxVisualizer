@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { ChatbotMessage } from "./ChatbotMessage";
 import { ChatbotInput } from "./ChatbotInput";
 import type { TaxReturn, ExtractedField, ReturnSummary } from "../../types/tax";
+import type { ChartConfig } from "../../types/chart";
 
 export interface Message {
   id: string;
@@ -15,6 +16,7 @@ export interface ChatbotPanelProps {
   fields: Record<number, ExtractedField[]>;
   summaries: ReturnSummary[];
   onOpenSettings: () => void;
+  onCreateChart: (config: ChartConfig) => void;
 }
 
 export function ChatbotPanel({
@@ -22,6 +24,7 @@ export function ChatbotPanel({
   fields,
   summaries,
   onOpenSettings,
+  onCreateChart,
 }: ChatbotPanelProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -73,13 +76,23 @@ export function ChatbotPanel({
       // (React's functional update reads the ref when it processes, not when called)
       const finalContent = streamingContentRef.current;
 
+      // Check for chart creation config
+      const { parseChartConfig, stripChartConfig } = await import("../../services/claude");
+      const chartConfig = parseChartConfig(finalContent);
+      if (chartConfig) {
+        onCreateChart(chartConfig);
+      }
+
+      // Display content without the JSON config block
+      const displayContent = stripChartConfig(finalContent);
+
       // After streaming completes, add the full message
       setMessages((prev) => [
         ...prev,
         {
           id: crypto.randomUUID(),
           role: "assistant",
-          content: finalContent,  // Use captured value, not ref
+          content: displayContent,  // Use stripped content for display
           timestamp: new Date(),
         },
       ]);

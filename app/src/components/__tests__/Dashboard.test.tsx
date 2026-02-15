@@ -4,8 +4,10 @@ import { Dashboard } from "../Dashboard";
 import { makeReturn, makeSummary, makeFieldSet, makeMultiYearData } from "../../test/fixtures";
 
 describe("Dashboard", () => {
+  const noop = () => {};
+
   it("shows empty state when no returns", () => {
-    render(<Dashboard returns={[]} fields={{}} summaries={[]} />);
+    render(<Dashboard returns={[]} fields={{}} summaries={[]} customCharts={[]} onRemoveChart={noop} onRemoveWidget={noop} hiddenWidgets={[]} />);
 
     expect(screen.getByText("No tax returns uploaded yet")).toBeInTheDocument();
     expect(
@@ -19,7 +21,7 @@ describe("Dashboard", () => {
     const summaries = [makeSummary({ tax_year: 2023 })];
 
     render(
-      <Dashboard returns={returns} fields={fields} summaries={summaries} />
+      <Dashboard returns={returns} fields={fields} summaries={summaries} customCharts={[]} onRemoveChart={noop} onRemoveWidget={noop} hiddenWidgets={[]} />
     );
 
     expect(screen.getByText("Key Numbers")).toBeInTheDocument();
@@ -31,7 +33,7 @@ describe("Dashboard", () => {
     const summaries = [makeSummary()];
 
     render(
-      <Dashboard returns={returns} fields={fields} summaries={summaries} />
+      <Dashboard returns={returns} fields={fields} summaries={summaries} customCharts={[]} onRemoveChart={noop} onRemoveWidget={noop} hiddenWidgets={[]} />
     );
 
     expect(
@@ -43,7 +45,7 @@ describe("Dashboard", () => {
     const { returns, fields, summaries } = makeMultiYearData();
 
     render(
-      <Dashboard returns={returns} fields={fields} summaries={summaries} />
+      <Dashboard returns={returns} fields={fields} summaries={summaries} customCharts={[]} onRemoveChart={noop} onRemoveWidget={noop} hiddenWidgets={[]} />
     );
 
     expect(screen.getByText("Key Numbers")).toBeInTheDocument();
@@ -58,7 +60,7 @@ describe("Dashboard", () => {
     const summaries = [makeSummary()];
 
     const { container } = render(
-      <Dashboard returns={returns} fields={fields} summaries={summaries} />
+      <Dashboard returns={returns} fields={fields} summaries={summaries} customCharts={[]} onRemoveChart={noop} onRemoveWidget={noop} hiddenWidgets={[]} />
     );
 
     expect(container.querySelector(".dashboard")).toBeInTheDocument();

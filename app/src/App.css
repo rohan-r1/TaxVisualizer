@@ -337,13 +337,36 @@
   border: 1px solid var(--border);
 }
 
-.widget-title {
-  font-size: 0.8125rem;
-  font-weight: 600;
+.widget-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 1.25rem;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+}
+
+.widget-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.widget-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.375rem;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.12s, color 0.12s;
+}
+
+.widget-close:hover {
+  color: var(--danger);
+  background: var(--danger-bg);
 }
 
 /* Key Numbers — tabular layout */
@@ -410,6 +433,27 @@
 /* YoY chart widget */
 .yoy-chart-widget {
   padding: 0.5rem 0;
+}
+
+/* Custom chart widget (created via chatbot) */
+.widget-section--custom {
+  border-color: var(--accent);
+}
+
+.custom-chart {
+  padding: 0.5rem 0;
+}
+
+.widget-badge {
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: rgba(255, 71, 0, 0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+  margin-left: 0.75rem;
 }
 
 /* Recharts legend text color fix */

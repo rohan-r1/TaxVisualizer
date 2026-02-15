@@ -11,6 +11,7 @@ describe("ChatbotPanel", () => {
     fields: { 1: makeFieldSet(1) },
     summaries: [makeSummary()],
     onOpenSettings: vi.fn(),
+    onCreateChart: vi.fn(),
   };
 
   it("renders as always-visible panel", () => {

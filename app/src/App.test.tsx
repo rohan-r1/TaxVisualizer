@@ -25,7 +25,22 @@ vi.mock("@tauri-apps/plugin-dialog", () => ({
 
 // Mock pdfExtraction to avoid pdfjs-dist DOMMatrix error in Node
 vi.mock("./services/pdfExtraction", () => ({
-  extractFromPdf: vi.fn().mockRejectedValue(new Error("Mock: use mock extraction")),
+  extractFromPdf: vi.fn().mockRejectedValue(new Error("Mock: use sidecar")),
+}));
+
+// Mock pdfExtractor sidecar
+vi.mock("./services/pdfExtractor", () => ({
+  checkSidecarAvailable: vi.fn().mockResolvedValue(true),
+  extractPdf: vi.fn().mockResolvedValue({
+    year: 2023,
+    filing_status: "Single",
+    extraction_method: "pdfplumber",
+    fields: [
+      { key: "total_income", label: "Total income", value: "75000", category: "income", line_number: "9", confidence: 1.0 },
+      { key: "agi", label: "Adjusted gross income", value: "72000", category: "income", line_number: "11", confidence: 1.0 },
+      { key: "total_tax", label: "Total tax", value: "8500", category: "tax_computation", line_number: "24", confidence: 1.0 },
+    ],
+  }),
 }));
 
 const mockedDb = vi.mocked(database);

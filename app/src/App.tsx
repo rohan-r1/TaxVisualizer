@@ -12,9 +12,9 @@ import {
   deleteReturn,
   buildSummary,
 } from "./db/database";
-import { mockExtract } from "./db/mockExtraction";
 import { extractPdf, checkSidecarAvailable } from "./services/pdfExtractor";
 import type { TaxReturn, ExtractedField, ReturnSummary } from "./types/tax";
+import type { ChartConfig } from "./types/chart";
 import "./App.css";
 
 function App() {
@@ -26,6 +26,8 @@ function App() {
   const [error, setError] = useState<string | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [sidecarAvailable, setSidecarAvailable] = useState<boolean | null>(null);
+  const [customCharts, setCustomCharts] = useState<ChartConfig[]>([]);
+  const [hiddenWidgets, setHiddenWidgets] = useState<string[]>([]);
 
   const loadData = useCallback(async () => {
     try {
@@ -56,41 +58,35 @@ function App() {
       setError(null);
       setExtracting(true);
 
-      let extracted;
-
-      // Try real PDF extraction if sidecar is available
-      if (sidecarAvailable) {
-        console.log("Using Python sidecar for PDF extraction");
-        const result = await extractPdf(path);
-
-        if (result.error) {
-          // Sidecar extraction failed, fall back to mock
-          console.warn("Sidecar extraction failed:", result.error);
-          console.log("Falling back to mock extraction");
-          extracted = mockExtract(filename);
-        } else {
-          // Convert sidecar result to our format
-          // Note: insertFieldsBatch expects key/label/value, not fieldKey/fieldLabel/fieldValue
-          extracted = {
-            year: result.year,
-            filingStatus: result.filing_status,
-            extractionMethod: result.extraction_method,
-            fields: result.fields.map((f) => ({
-              key: f.key,
-              label: f.label,
-              value: f.value,
-              fieldType: "number" as const,
-              category: f.category,
-              lineNumber: f.line_number,
-              confidence: f.confidence,
-            })),
-          };
-        }
-      } else {
-        // Sidecar not available, use mock extraction
-        console.log("Sidecar not available, using mock extraction");
-        extracted = mockExtract(filename);
+      // Require sidecar for PDF extraction
+      if (!sidecarAvailable) {
+        throw new Error(
+          "PDF extraction unavailable. Please build the Python sidecar: cd app/src-tauri/python && python build.py"
+        );
       }
+
+      console.log("Using Python sidecar for PDF extraction");
+      const result = await extractPdf(path);
+
+      if (result.error) {
+        throw new Error(`PDF extraction failed: ${result.error}`);
+      }
+
+      // Convert sidecar result to our format
+      const extracted = {
+        year: result.year,
+        filingStatus: result.filing_status,
+        extractionMethod: result.extraction_method,
+        fields: result.fields.map((f) => ({
+          key: f.key,
+          label: f.label,
+          value: f.value,
+          fieldType: "number" as const,
+          category: f.category,
+          lineNumber: f.line_number,
+          confidence: f.confidence,
+        })),
+      };
 
       // Store in database
       const returnId = await insertReturn(
@@ -127,6 +123,18 @@ function App() {
       setError(err instanceof Error ? err.message : String(err));
     }
   };
+
+  const handleCreateChart = useCallback((config: ChartConfig) => {
+    setCustomCharts((prev) => [config, ...prev]); // Add to front (top)
+  }, []);
+
+  const handleRemoveChart = useCallback((id: string) => {
+    setCustomCharts((prev) => prev.filter((c) => c.id !== id));
+  }, []);
+
+  const handleHideWidget = useCallback((id: string) => {
+    setHiddenWidgets((prev) => [...prev, id]);
+  }, []);
 
   if (loading) {
     return <div className="app-loading">Loading...</div>;
@@ -168,12 +176,17 @@ function App() {
             fields={fields}
             summaries={summaries}
             onOpenSettings={() => setSettingsOpen(true)}
+            onCreateChart={handleCreateChart}
           />
           <section className="app-content">
             <Dashboard
               returns={returns}
               fields={fields}
               summaries={summaries}
+              customCharts={customCharts}
+              onRemoveChart={handleRemoveChart}
+              onRemoveWidget={handleHideWidget}
+              hiddenWidgets={hiddenWidgets}
             />
           </section>
         </main>
