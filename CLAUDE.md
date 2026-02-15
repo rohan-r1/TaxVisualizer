@@ -95,7 +95,7 @@ PDF Upload (local) -> PDF Type Detection -> Text Extraction (digital) or OCR API
 - `app/src/db/mockExtraction.ts` — mock extraction with Form 1040 + Schedules A/C/D fields (fallback when sidecar unavailable)
 - `app/src/services/pdfExtractor.ts` — TypeScript service to invoke Python sidecar
 - `app/src-tauri/python/extract.py` — Python sidecar for PDF extraction with pdfplumber
-- `app/src-tauri/python/mappings/` — Year-specific Form 1040 field coordinate mappings (2018-2025)
+- `app/src-tauri/python/mappings/` — Year-specific coordinate mappings for Form 1040 + Schedules 1, A, C (2018-2024)
 - `app/src-tauri/python/build.py` — PyInstaller build script for sidecar executable
 - `test-data/generate_sample_returns.py` — Test data generator with multi-year personas and tax calculator
 - `test-data/generated/` — Generated test PDFs and JSON sidecars (alex_chen, maria_garcia personas)
@@ -114,17 +114,19 @@ PDF Upload (local) -> PDF Type Detection -> Text Extraction (digital) or OCR API
 - `learning-notes/` — Technical explanations for PM education (created by `/learning-opportunity` command)
 
 ## Current Status
-MVP fully functional with real PDF extraction and comprehensive test data infrastructure. Infrastructure phase complete — extraction, test data, and mapping calibration all working. Python sidecar (pdfplumber) extracts Form 1040 fields (2018-2024) using coordinate-based mapping. Test data generator produces multi-year persona sequences with mathematically-correct tax calculations. Two personas available: Alex Chen (7 years) and Maria Garcia (7 years). Cron.com-inspired dark UI with upload button in sidebar. GitHub repo: https://github.com/rohan-r1/TaxVisualizer
+MVP fully functional with real PDF extraction and comprehensive test data infrastructure. Python sidecar (pdfplumber) extracts Form 1040 + Schedule 1, A, C fields (2018-2024) using coordinate-based mapping. Schedule data is extracted and stored but not yet exposed in charts (naming mismatch between TypeScript and Python — plan ready in ROH-36). Test data generator produces multi-year persona sequences with mathematically-correct tax calculations. Two personas available: Alex Chen (7 years) and Maria Garcia (7 years). Cron.com-inspired dark UI with upload button in sidebar. GitHub repo: https://github.com/rohan-r1/TaxVisualizer
 
 ### Active Issues
+- **ROH-36:** Add schedule data to charts — plan ready, needs `/execute`
 - **ROH-15:** Encryption at rest — deferred (waiting for official SQLCipher support in tauri-plugin-sql)
 - **ROH-31:** Make fonts and font sizes uniform across the application (Medium priority)
 
 ## Next Steps
-1. **ROH-31:** Standardize typography — audit and unify font usage (Inter for UI, JetBrains Mono for numbers/data)
-2. **ROH-22:** Review which extracted fields to display in summary
-3. **Confidence/Review Flow** — Flag low-confidence fields for user correction
-4. **ROH-15:** Monitor for official SQLCipher support, then implement encryption
+1. **ROH-36:** Execute plan to expose schedule data in charts (fix naming mismatch in `chart.ts` and `claude.ts`)
+2. **ROH-31:** Standardize typography — audit and unify font usage (Inter for UI, JetBrains Mono for numbers/data)
+3. **ROH-22:** Review which extracted fields to display in summary
+4. **Confidence/Review Flow** — Flag low-confidence fields for user correction
+5. **ROH-15:** Monitor for official SQLCipher support, then implement encryption
 
 ## Git Commits
 - Do NOT include `Co-Authored-By` lines in commit messages

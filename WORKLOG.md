@@ -1,5 +1,29 @@
 # Work Log
 
+## 2026-02-15
+
+### Work Done
+- Created plan for ROH-36: Add schedule data to charts and visualizations
+  - Discovered critical naming mismatch: `AVAILABLE_METRICS` expects `sched_a_*` but Python extracts `scheda_*`
+  - Schedule 1 metrics completely missing from chart system
+  - Plan: update TypeScript to match Python output (simpler than regenerating test data)
+  - Plan file: `plans/ROH-36.md`
+- Committed and pushed all prior uncommitted work:
+  - Schedule extraction mappings for Schedule 1, A, C (2018-2024) — 21 new mapping files
+  - Updated `extract.py` with schedule field extraction logic
+  - Regenerated test PDFs with schedule data (both personas)
+  - Added blank IRS templates for schedule forms
+  - ROH-34 plan (schedule extraction infrastructure)
+
+### Decisions Made
+- Fix naming mismatch by updating TypeScript (`chart.ts`, `claude.ts`) rather than Python mappings — avoids regenerating 28 test PDFs and 21 mapping files
+
+### Next Steps
+- `/execute` ROH-36 to enable schedule data in charts
+- ROH-31: Standardize typography
+
+---
+
 ## 2026-02-14 (Session 2)
 
 ### Work Done
