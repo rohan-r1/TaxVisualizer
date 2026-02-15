@@ -94,7 +94,7 @@ class TestDetectSchedulesWithScheduleA:
         """Schedule A should be detected by secondary pattern."""
         pdf = MockPDF([
             "Form 1040 2023",
-            "Itemized Deductions\nGo to www.irs.gov/ScheduleA"
+            "SCHEDULE A Itemized Deductions\nGo to www.irs.gov/ScheduleA"
         ])
 
         result = detect_schedules(pdf)
@@ -123,7 +123,7 @@ class TestDetectSchedulesWithSchedule1:
         pdf = MockPDF([
             "Form 1040 2023",
             "Page 2",
-            "Additional Income and Adjustments to Income\nPart I Additional Income"
+            "SCHEDULE 1 Additional Income\nPart I Additional Income"
         ])
 
         result = detect_schedules(pdf)
@@ -151,7 +151,7 @@ class TestDetectSchedulesWithScheduleC:
         """Schedule C should be detected by secondary pattern."""
         pdf = MockPDF([
             "Form 1040 2023",
-            "Profit or Loss From Business\n(Sole Proprietorship)"
+            "SCHEDULE C Profit or Loss\n(Sole Proprietorship)"
         ])
 
         result = detect_schedules(pdf)

@@ -2,6 +2,10 @@
   "pdf_file": "1040_2021.pdf",
   "tax_year": 2021,
   "filing_status": "Single",
+  "detected_forms": [
+    "Form 1040",
+    "Schedule 1"
+  ],
   "fields": {
     "wages": {
       "expected": "95000",
@@ -28,12 +32,12 @@
       "tolerance": 0
     },
     "adjustments": {
-      "expected": null,
+      "expected": "6100",
       "tolerance": 0,
       "allow_null": true
     },
     "agi": {
-      "expected": "97050",
+      "expected": "90950",
       "tolerance": 0
     },
     "deductions": {
@@ -41,11 +45,11 @@
       "tolerance": 0
     },
     "taxable_income": {
-      "expected": "84500",
+      "expected": "78400",
       "tolerance": 0
     },
     "tax_amount": {
-      "expected": "14338",
+      "expected": "12996",
       "tolerance": 0
     },
     "child_tax_credit": {
@@ -54,7 +58,7 @@
       "allow_null": true
     },
     "total_tax": {
-      "expected": "14338",
+      "expected": "12996",
       "tolerance": 0
     },
     "federal_withholding": {
@@ -76,7 +80,32 @@
       "allow_null": true
     },
     "amount_owed": {
-      "expected": "2338",
+      "expected": "996",
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "sched1_educator_expenses": {
+      "expected": null,
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "sched1_hsa_deduction": {
+      "expected": "3600",
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "sched1_student_loan_interest": {
+      "expected": "2500",
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "sched1_ira_deduction": {
+      "expected": null,
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "sched1_total_adjustments": {
+      "expected": "6100",
       "tolerance": 0,
       "allow_null": true
     }

@@ -1,5 +1,19 @@
 # Work Log
 
+## 2026-02-14 (Session 2)
+
+### Work Done
+- Created Linear issue ROH-31: Make fonts and font sizes uniform across the application (Medium priority)
+- Marked ROH-30 (Custom chart creation via chatbot) as Done
+- Marked ROH-16 (PDF extraction pipeline) as Done — Tier 2 (digital extraction) complete, Tiers 3-4 (OCR/LLM validation) remain deferred for future work
+
+### Next Steps
+- ROH-31: Standardize typography (Inter for UI, JetBrains Mono for numbers)
+- ROH-22: Review which extracted fields to display in summary
+- ROH-15: Encryption at rest (waiting for SQLCipher support)
+
+---
+
 ## 2026-02-16
 
 ### Work Done

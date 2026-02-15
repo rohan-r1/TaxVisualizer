@@ -2,6 +2,10 @@
   "pdf_file": "1040_2018.pdf",
   "tax_year": 2018,
   "filing_status": "Married Filing Jointly",
+  "detected_forms": [
+    "Form 1040",
+    "Schedule A"
+  ],
   "fields": {
     "wages": {
       "expected": "82000",
@@ -37,15 +41,15 @@
       "tolerance": 0
     },
     "deductions": {
-      "expected": "24000",
+      "expected": "26500",
       "tolerance": 0
     },
     "taxable_income": {
-      "expected": "58430",
+      "expected": "55930",
       "tolerance": 0
     },
     "tax_amount": {
-      "expected": "6630",
+      "expected": "6330",
       "tolerance": 0
     },
     "child_tax_credit": {
@@ -54,7 +58,7 @@
       "allow_null": true
     },
     "total_tax": {
-      "expected": "2630",
+      "expected": "2330",
       "tolerance": 0
     },
     "federal_withholding": {
@@ -71,12 +75,37 @@
       "tolerance": 0
     },
     "refund": {
-      "expected": "8870",
+      "expected": "9170",
       "tolerance": 0,
       "allow_null": true
     },
     "amount_owed": {
       "expected": null,
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "scheda_salt_deduction": {
+      "expected": "10000",
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "scheda_mortgage_interest_1098": {
+      "expected": "14000",
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "scheda_charity_cash": {
+      "expected": "2500",
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "scheda_charity_noncash": {
+      "expected": null,
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "scheda_total_itemized": {
+      "expected": "26500",
       "tolerance": 0,
       "allow_null": true
     }

@@ -2,6 +2,10 @@
   "pdf_file": "1040_2024.pdf",
   "tax_year": 2024,
   "filing_status": "Head of Household",
+  "detected_forms": [
+    "Form 1040",
+    "Schedule A"
+  ],
   "fields": {
     "wages": {
       "expected": "135000",
@@ -37,15 +41,15 @@
       "tolerance": 0
     },
     "deductions": {
-      "expected": "21900",
+      "expected": "26000",
       "tolerance": 0
     },
     "taxable_income": {
-      "expected": "117300",
+      "expected": "113200",
       "tolerance": 0
     },
     "tax_amount": {
-      "expected": "19501",
+      "expected": "18517",
       "tolerance": 0
     },
     "child_tax_credit": {
@@ -54,7 +58,7 @@
       "allow_null": true
     },
     "total_tax": {
-      "expected": "17501",
+      "expected": "16517",
       "tolerance": 0
     },
     "federal_withholding": {
@@ -71,12 +75,37 @@
       "tolerance": 0
     },
     "refund": {
-      "expected": "4499",
+      "expected": "5483",
       "tolerance": 0,
       "allow_null": true
     },
     "amount_owed": {
       "expected": null,
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "scheda_salt_deduction": {
+      "expected": "10000",
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "scheda_mortgage_interest_1098": {
+      "expected": "9500",
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "scheda_charity_cash": {
+      "expected": "5000",
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "scheda_charity_noncash": {
+      "expected": "1500",
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "scheda_total_itemized": {
+      "expected": "26000",
       "tolerance": 0,
       "allow_null": true
     }

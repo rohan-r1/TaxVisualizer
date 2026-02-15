@@ -2,6 +2,10 @@
   "pdf_file": "1040_2018.pdf",
   "tax_year": 2018,
   "filing_status": "Single",
+  "detected_forms": [
+    "Form 1040",
+    "Schedule 1"
+  ],
   "fields": {
     "wages": {
       "expected": "65000",
@@ -28,12 +32,12 @@
       "tolerance": 0
     },
     "adjustments": {
-      "expected": null,
+      "expected": "2500",
       "tolerance": 0,
       "allow_null": true
     },
     "agi": {
-      "expected": "65050",
+      "expected": "62550",
       "tolerance": 0
     },
     "deductions": {
@@ -41,11 +45,11 @@
       "tolerance": 0
     },
     "taxable_income": {
-      "expected": "53050",
+      "expected": "50550",
       "tolerance": 0
     },
     "tax_amount": {
-      "expected": "7610",
+      "expected": "7060",
       "tolerance": 0
     },
     "child_tax_credit": {
@@ -54,7 +58,7 @@
       "allow_null": true
     },
     "total_tax": {
-      "expected": "7610",
+      "expected": "7060",
       "tolerance": 0
     },
     "federal_withholding": {
@@ -71,12 +75,37 @@
       "tolerance": 0
     },
     "refund": {
-      "expected": "2140",
+      "expected": "2690",
       "tolerance": 0,
       "allow_null": true
     },
     "amount_owed": {
       "expected": null,
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "sched1_educator_expenses": {
+      "expected": null,
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "sched1_hsa_deduction": {
+      "expected": null,
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "sched1_student_loan_interest": {
+      "expected": "2500",
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "sched1_ira_deduction": {
+      "expected": null,
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "sched1_total_adjustments": {
+      "expected": "2500",
       "tolerance": 0,
       "allow_null": true
     }

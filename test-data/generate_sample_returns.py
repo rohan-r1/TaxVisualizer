@@ -279,9 +279,91 @@ def get_field_mapping(year: int) -> dict:
         return {}
 
 
+def get_schedule_field_mapping(schedule_type: str, year: int) -> dict:
+    """Load field mappings for a specific schedule and year."""
+    try:
+        from mappings import get_schedule_mapping
+        return get_schedule_mapping(schedule_type, year)
+    except ImportError as e:
+        print(f"Warning: Could not load schedule mappings: {e}")
+        return {}
+
+
+def get_schedule_template_path(schedule_type: str, year: int) -> Optional[Path]:
+    """Get the template path for a schedule."""
+    # Convert schedule_1 -> f1040s1, schedule_a -> f1040sa, schedule_c -> f1040sc
+    schedule_code = {
+        'schedule_1': 's1',
+        'schedule_a': 'sa',
+        'schedule_c': 'sc',
+    }.get(schedule_type)
+
+    if not schedule_code:
+        return None
+
+    template_path = TEMPLATES_DIR / f"f1040{schedule_code}--{year}.pdf"
+    if template_path.exists():
+        return template_path
+
+    # Try adjacent years as fallback
+    for delta in [1, -1, 2, -2]:
+        fallback_path = TEMPLATES_DIR / f"f1040{schedule_code}--{year + delta}.pdf"
+        if fallback_path.exists():
+            return fallback_path
+
+    return None
+
+
 # =============================================================================
 # Persona Generator
 # =============================================================================
+
+@dataclass
+class ScheduleAData:
+    """Schedule A (Itemized Deductions) data."""
+    medical_expenses: int = 0
+    salt_deduction: int = 0  # State and local taxes (capped at $10K)
+    mortgage_interest: int = 0
+    charity_cash: int = 0
+    charity_noncash: int = 0
+    total_itemized: int = 0  # Will be calculated if not provided
+
+
+@dataclass
+class ScheduleCData:
+    """Schedule C (Self-Employment) data."""
+    gross_receipts: int = 0
+    returns_allowances: int = 0
+    cogs: int = 0  # Cost of goods sold
+    gross_profit: int = 0  # Will be calculated
+    total_expenses: int = 0
+    net_profit: int = 0  # Will be calculated
+    # Common expense categories
+    advertising: int = 0
+    car_expenses: int = 0
+    insurance: int = 0
+    office_expense: int = 0
+    supplies: int = 0
+    utilities: int = 0
+
+
+@dataclass
+class Schedule1Data:
+    """Schedule 1 (Additional Income and Adjustments) data."""
+    # Part I - Additional Income
+    business_income: int = 0  # From Schedule C
+    rental_income: int = 0
+    unemployment: int = 0
+    other_income: int = 0
+    total_additional_income: int = 0
+    # Part II - Adjustments
+    educator_expenses: int = 0
+    hsa_deduction: int = 0
+    se_tax_deduction: int = 0  # Self-employment tax deduction
+    student_loan_interest: int = 0
+    ira_deduction: int = 0
+    total_adjustments: int = 0
+
 
 @dataclass
 class YearlyData:
@@ -306,6 +388,10 @@ class YearlyData:
     city: str = ""
     state: str = ""
     zip_code: str = ""
+    # Schedule data (optional)
+    schedule_a: Optional[ScheduleAData] = None
+    schedule_c: Optional[ScheduleCData] = None
+    schedule_1: Optional[Schedule1Data] = None
 
 
 # =============================================================================
@@ -314,42 +400,140 @@ class YearlyData:
 
 ALEX_CHEN_PERSONA: Dict[int, YearlyData] = {
     2018: YearlyData(
+        # Age 25, junior developer, standard deduction makes sense
         wages=65000, interest=50, withholding=9750, filing_status="Single",
         first_name="Alex", last_name="Chen",
         address="456 Startup Lane, Apt 12", city="San Francisco", state="CA", zip_code="94107",
+        # Schedule 1: Student loan interest from college
+        schedule_1=Schedule1Data(
+            student_loan_interest=2500,
+            total_adjustments=2500,
+        ),
+        adjustments=2500,
     ),
     2019: YearlyData(
+        # Starting side freelance work
         wages=72000, interest=120, dividends=80, withholding=10800, filing_status="Single",
+        other_income=5000,  # Freelance income from Schedule C
         first_name="Alex", last_name="Chen",
         address="456 Startup Lane, Apt 12", city="San Francisco", state="CA", zip_code="94107",
+        # Schedule 1: Student loan + self-employment tax deduction
+        schedule_1=Schedule1Data(
+            business_income=5000,
+            student_loan_interest=2500,
+            se_tax_deduction=353,  # Half of SE tax
+            total_additional_income=5000,
+            total_adjustments=2853,
+        ),
+        adjustments=2853,
+        # Schedule C: Freelance web development
+        schedule_c=ScheduleCData(
+            gross_receipts=8000,
+            total_expenses=3000,
+            net_profit=5000,
+            advertising=200,
+            office_expense=500,
+            supplies=800,
+            utilities=500,
+        ),
     ),
     2020: YearlyData(
+        # Moved to Austin, renting, HSA started
         wages=75000, interest=200, dividends=150, withholding=11200, filing_status="Single",
         first_name="Alex", last_name="Chen",
         address="789 Remote Work Dr", city="Austin", state="TX", zip_code="78701",
+        # Schedule 1: HSA + student loan
+        schedule_1=Schedule1Data(
+            hsa_deduction=3550,  # Individual HSA max 2020
+            student_loan_interest=2500,
+            total_adjustments=6050,
+        ),
+        adjustments=6050,
     ),
     2021: YearlyData(
+        # Promotion, more investment income, continuing HSA
         wages=95000, interest=350, dividends=200, capital_gains=1500, withholding=12000, filing_status="Single",
         first_name="Alex", last_name="Chen",
         address="789 Remote Work Dr", city="Austin", state="TX", zip_code="78701",
+        # Schedule 1: HSA + student loan
+        schedule_1=Schedule1Data(
+            hsa_deduction=3600,  # Individual HSA max 2021
+            student_loan_interest=2500,
+            total_adjustments=6100,
+        ),
+        adjustments=6100,
     ),
     2022: YearlyData(
+        # Married Jordan (teacher), bought house, now itemizing
         wages=105000, interest=500, dividends=400, qualified_dividends=300, capital_gains=2500,
         withholding=16000, filing_status="Married Filing Jointly",
         first_name="Alex", last_name="Chen", spouse_first_name="Jordan", spouse_last_name="Chen",
         address="123 Married Life Blvd", city="Austin", state="TX", zip_code="78704",
+        # Schedule 1: Family HSA + student loan + educator expenses (Jordan)
+        schedule_1=Schedule1Data(
+            educator_expenses=300,  # Jordan's classroom supplies
+            hsa_deduction=7300,  # Family HSA max 2022
+            student_loan_interest=2500,
+            total_adjustments=10100,
+        ),
+        adjustments=10100,
+        # Schedule A: Now itemizing with mortgage + SALT
+        schedule_a=ScheduleAData(
+            salt_deduction=10000,  # SALT cap
+            mortgage_interest=12000,  # First year mortgage
+            charity_cash=3000,
+            total_itemized=25000,
+        ),
+        itemized_deductions=25000,
     ),
     2023: YearlyData(
+        # Continued growth, started IRA contributions
         wages=120000, interest=800, dividends=600, qualified_dividends=450, capital_gains=3200,
         withholding=19000, filing_status="Married Filing Jointly",
         first_name="Alex", last_name="Chen", spouse_first_name="Jordan", spouse_last_name="Chen",
         address="123 Married Life Blvd", city="Austin", state="TX", zip_code="78704",
+        # Schedule 1: Family HSA + educator expenses
+        schedule_1=Schedule1Data(
+            educator_expenses=300,
+            hsa_deduction=7750,  # Family HSA max 2023
+            ira_deduction=6500,  # Traditional IRA contribution
+            total_adjustments=14550,
+        ),
+        adjustments=14550,
+        # Schedule A: Continued itemizing
+        schedule_a=ScheduleAData(
+            salt_deduction=10000,
+            mortgage_interest=11500,
+            charity_cash=4000,
+            charity_noncash=500,
+            total_itemized=26000,
+        ),
+        itemized_deductions=26000,
     ),
     2024: YearlyData(
+        # Baby arrived, maxing out tax-advantaged accounts
         wages=130000, interest=1000, dividends=800, qualified_dividends=600, capital_gains=4000,
         withholding=21000, filing_status="Married Filing Jointly", children=1,
         first_name="Alex", last_name="Chen", spouse_first_name="Jordan", spouse_last_name="Chen",
         address="456 Family Home Ct", city="Austin", state="TX", zip_code="78745",
+        # Schedule 1: Family HSA + educator expenses + IRA
+        schedule_1=Schedule1Data(
+            educator_expenses=300,
+            hsa_deduction=8300,  # Family HSA max 2024
+            ira_deduction=7000,  # Increased IRA limit
+            total_adjustments=15600,
+        ),
+        adjustments=15600,
+        # Schedule A: Higher itemized deductions with larger home
+        schedule_a=ScheduleAData(
+            medical_expenses=0,  # Below threshold
+            salt_deduction=10000,
+            mortgage_interest=14000,  # Larger home, higher mortgage
+            charity_cash=5000,
+            charity_noncash=1000,
+            total_itemized=30000,
+        ),
+        itemized_deductions=30000,
     ),
 }
 
@@ -361,10 +545,20 @@ ALEX_CHEN_PERSONA: Dict[int, YearlyData] = {
 MARIA_GARCIA_PERSONA: Dict[int, YearlyData] = {
     2018: YearlyData(
         # Age 35, nurse practitioner, married with 2 kids
+        # Homeowner with mortgage, high property taxes in IL
         wages=82000, interest=180, dividends=250, withholding=11500,
         filing_status="Married Filing Jointly", children=2,
         first_name="Maria", last_name="Garcia", spouse_first_name="Carlos", spouse_last_name="Garcia",
         address="234 Oak Street", city="Chicago", state="IL", zip_code="60614",
+        # Schedule A: Itemized due to mortgage interest + high IL taxes
+        schedule_a=ScheduleAData(
+            medical_expenses=0,  # Below 7.5% AGI threshold
+            salt_deduction=10000,  # SALT cap
+            mortgage_interest=14000,
+            charity_cash=2500,
+            total_itemized=26500,
+        ),
+        itemized_deductions=26500,
     ),
     2019: YearlyData(
         # Promotion to senior NP
@@ -372,20 +566,45 @@ MARIA_GARCIA_PERSONA: Dict[int, YearlyData] = {
         filing_status="Married Filing Jointly", children=2,
         first_name="Maria", last_name="Garcia", spouse_first_name="Carlos", spouse_last_name="Garcia",
         address="234 Oak Street", city="Chicago", state="IL", zip_code="60614",
+        # Schedule A: Still itemizing
+        schedule_a=ScheduleAData(
+            salt_deduction=10000,
+            mortgage_interest=13500,
+            charity_cash=3000,
+            total_itemized=26500,
+        ),
+        itemized_deductions=26500,
     ),
     2020: YearlyData(
-        # COVID year - overtime pay, hazard bonuses
+        # COVID year - overtime pay, hazard bonuses, increased charitable giving
         wages=115000, interest=300, dividends=400, withholding=18000,
         filing_status="Married Filing Jointly", children=2,
         first_name="Maria", last_name="Garcia", spouse_first_name="Carlos", spouse_last_name="Garcia",
         address="234 Oak Street", city="Chicago", state="IL", zip_code="60614",
+        # Schedule A: Higher charitable giving during pandemic
+        schedule_a=ScheduleAData(
+            salt_deduction=10000,
+            mortgage_interest=13000,
+            charity_cash=5000,  # Increased COVID giving
+            total_itemized=28000,
+        ),
+        itemized_deductions=28000,
     ),
     2021: YearlyData(
         # Divorce finalized, now Head of Household with kids
+        # Kept the house, refinanced mortgage
         wages=105000, interest=250, dividends=300, withholding=16500,
         filing_status="Head of Household", children=2,
         first_name="Maria", last_name="Garcia",
         address="567 New Beginning Ave", city="Chicago", state="IL", zip_code="60657",
+        # Schedule A: Refinanced, lower interest but still itemizing
+        schedule_a=ScheduleAData(
+            salt_deduction=10000,
+            mortgage_interest=11000,
+            charity_cash=2000,
+            total_itemized=23000,
+        ),
+        itemized_deductions=23000,
     ),
     2022: YearlyData(
         # Stable, rebuilding savings
@@ -393,6 +612,14 @@ MARIA_GARCIA_PERSONA: Dict[int, YearlyData] = {
         filing_status="Head of Household", children=2,
         first_name="Maria", last_name="Garcia",
         address="567 New Beginning Ave", city="Chicago", state="IL", zip_code="60657",
+        # Schedule A: Still itemizing
+        schedule_a=ScheduleAData(
+            salt_deduction=10000,
+            mortgage_interest=10500,
+            charity_cash=2500,
+            total_itemized=23000,
+        ),
+        itemized_deductions=23000,
     ),
     2023: YearlyData(
         # Director of nursing role
@@ -400,6 +627,15 @@ MARIA_GARCIA_PERSONA: Dict[int, YearlyData] = {
         filing_status="Head of Household", children=2,
         first_name="Maria", last_name="Garcia",
         address="567 New Beginning Ave", city="Chicago", state="IL", zip_code="60657",
+        # Schedule A: Higher income, more charitable giving
+        schedule_a=ScheduleAData(
+            salt_deduction=10000,
+            mortgage_interest=10000,
+            charity_cash=4000,
+            charity_noncash=1000,  # Donated items
+            total_itemized=25000,
+        ),
+        itemized_deductions=25000,
     ),
     2024: YearlyData(
         # Kids now 1 dependent (one turned 18)
@@ -407,6 +643,15 @@ MARIA_GARCIA_PERSONA: Dict[int, YearlyData] = {
         filing_status="Head of Household", children=1,
         first_name="Maria", last_name="Garcia",
         address="567 New Beginning Ave", city="Chicago", state="IL", zip_code="60657",
+        # Schedule A: Continued itemizing
+        schedule_a=ScheduleAData(
+            salt_deduction=10000,
+            mortgage_interest=9500,
+            charity_cash=5000,
+            charity_noncash=1500,
+            total_itemized=26000,
+        ),
+        itemized_deductions=26000,
     ),
 }
 
@@ -583,7 +828,94 @@ def create_overlay_pdf(year: int, tax_result: TaxResult, num_pages: int = 2) -> 
     return buffer
 
 
-def generate_filled_pdf(year: int, tax_result: TaxResult, output_path: Path):
+def create_schedule_overlay_pdf(
+    schedule_type: str, year: int, schedule_data, num_pages: int = 1
+) -> BytesIO:
+    """Create a PDF with schedule values overlaid at correct positions."""
+    buffer = BytesIO()
+    c = canvas.Canvas(buffer, pagesize=letter)
+
+    # Get schedule field mappings
+    fields = get_schedule_field_mapping(schedule_type, year)
+    if not fields:
+        # No fields mapped, create empty pages
+        for _ in range(num_pages):
+            c.showPage()
+        c.save()
+        buffer.seek(0)
+        return buffer
+
+    # Build value lookup based on schedule type
+    values = {}
+    if schedule_type == 'schedule_a' and schedule_data:
+        values = {
+            "scheda_medical_expenses": schedule_data.medical_expenses if schedule_data.medical_expenses else None,
+            "scheda_salt_deduction": schedule_data.salt_deduction if schedule_data.salt_deduction else None,
+            "scheda_mortgage_interest_1098": schedule_data.mortgage_interest if schedule_data.mortgage_interest else None,
+            "scheda_charity_cash": schedule_data.charity_cash if schedule_data.charity_cash else None,
+            "scheda_charity_noncash": schedule_data.charity_noncash if schedule_data.charity_noncash else None,
+            "scheda_total_itemized": schedule_data.total_itemized if schedule_data.total_itemized else None,
+        }
+    elif schedule_type == 'schedule_1' and schedule_data:
+        values = {
+            "sched1_business_income": schedule_data.business_income if schedule_data.business_income else None,
+            "sched1_rental_income": schedule_data.rental_income if schedule_data.rental_income else None,
+            "sched1_unemployment": schedule_data.unemployment if schedule_data.unemployment else None,
+            "sched1_total_additional_income": schedule_data.total_additional_income if schedule_data.total_additional_income else None,
+            "sched1_educator_expenses": schedule_data.educator_expenses if schedule_data.educator_expenses else None,
+            "sched1_hsa_deduction": schedule_data.hsa_deduction if schedule_data.hsa_deduction else None,
+            "sched1_se_tax_deduction": schedule_data.se_tax_deduction if schedule_data.se_tax_deduction else None,
+            "sched1_student_loan_interest": schedule_data.student_loan_interest if schedule_data.student_loan_interest else None,
+            "sched1_ira_deduction": schedule_data.ira_deduction if schedule_data.ira_deduction else None,
+            "sched1_total_adjustments": schedule_data.total_adjustments if schedule_data.total_adjustments else None,
+        }
+    elif schedule_type == 'schedule_c' and schedule_data:
+        values = {
+            "schedc_gross_receipts": schedule_data.gross_receipts if schedule_data.gross_receipts else None,
+            "schedc_cogs": schedule_data.cogs if schedule_data.cogs else None,
+            "schedc_gross_profit": schedule_data.gross_profit if schedule_data.gross_profit else None,
+            "schedc_total_expenses": schedule_data.total_expenses if schedule_data.total_expenses else None,
+            "schedc_net_profit": schedule_data.net_profit if schedule_data.net_profit else None,
+        }
+
+    # Group fields by page
+    pages = {}
+    for field_name, field_info in fields.items():
+        page = field_info.get("page", 0)
+        if page not in pages:
+            pages[page] = []
+        pages[page].append((field_name, field_info))
+
+    # Draw each page
+    for page_num in range(num_pages):
+        if page_num > 0:
+            c.showPage()
+
+        c.setFont("Helvetica", 9)
+
+        if page_num in pages:
+            for field_name, field_info in pages[page_num]:
+                value = values.get(field_name)
+                if value is None:
+                    continue
+
+                bbox = field_info.get("bbox")
+                if not bbox:
+                    continue
+
+                x0, y0, x1, y1 = bbox
+                y_center_pdf = (y0 + y1) / 2
+                y_reportlab = PAGE_HEIGHT - y_center_pdf
+
+                text = f"{value:,}" if isinstance(value, int) else str(value)
+                c.drawRightString(x1, y_reportlab, text)
+
+    c.save()
+    buffer.seek(0)
+    return buffer
+
+
+def generate_filled_pdf(year: int, tax_result: TaxResult, output_path: Path, yearly_data: YearlyData = None):
     """Generate a filled 1040 by overlaying values onto the blank template."""
     # Find the template
     template_path = TEMPLATES_DIR / f"f1040--{year}.pdf"
@@ -613,6 +945,58 @@ def generate_filled_pdf(year: int, tax_result: TaxResult, output_path: Path):
                 page.merge_page(overlay_pdf.pages[i])
             writer.add_page(page)
 
+        # Add schedule pages if yearly_data has schedule data
+        if yearly_data:
+            schedules_added = []
+
+            # Schedule 1 (Additional Income and Adjustments)
+            if yearly_data.schedule_1:
+                sched_template = get_schedule_template_path('schedule_1', year)
+                if sched_template:
+                    sched_pdf = PdfReader(str(sched_template))
+                    sched_overlay = create_schedule_overlay_pdf(
+                        'schedule_1', year, yearly_data.schedule_1, len(sched_pdf.pages)
+                    )
+                    sched_overlay_pdf = PdfReader(sched_overlay)
+                    for i, page in enumerate(sched_pdf.pages):
+                        if i < len(sched_overlay_pdf.pages):
+                            page.merge_page(sched_overlay_pdf.pages[i])
+                        writer.add_page(page)
+                    schedules_added.append('Schedule 1')
+
+            # Schedule A (Itemized Deductions)
+            if yearly_data.schedule_a:
+                sched_template = get_schedule_template_path('schedule_a', year)
+                if sched_template:
+                    sched_pdf = PdfReader(str(sched_template))
+                    sched_overlay = create_schedule_overlay_pdf(
+                        'schedule_a', year, yearly_data.schedule_a, len(sched_pdf.pages)
+                    )
+                    sched_overlay_pdf = PdfReader(sched_overlay)
+                    for i, page in enumerate(sched_pdf.pages):
+                        if i < len(sched_overlay_pdf.pages):
+                            page.merge_page(sched_overlay_pdf.pages[i])
+                        writer.add_page(page)
+                    schedules_added.append('Schedule A')
+
+            # Schedule C (Self-Employment)
+            if yearly_data.schedule_c:
+                sched_template = get_schedule_template_path('schedule_c', year)
+                if sched_template:
+                    sched_pdf = PdfReader(str(sched_template))
+                    sched_overlay = create_schedule_overlay_pdf(
+                        'schedule_c', year, yearly_data.schedule_c, len(sched_pdf.pages)
+                    )
+                    sched_overlay_pdf = PdfReader(sched_overlay)
+                    for i, page in enumerate(sched_pdf.pages):
+                        if i < len(sched_overlay_pdf.pages):
+                            page.merge_page(sched_overlay_pdf.pages[i])
+                        writer.add_page(page)
+                    schedules_added.append('Schedule C')
+
+            if schedules_added:
+                print(f"    Added: {', '.join(schedules_added)}")
+
         # Write output
         with open(output_path, "wb") as f:
             writer.write(f)
@@ -621,34 +1005,79 @@ def generate_filled_pdf(year: int, tax_result: TaxResult, output_path: Path):
 
     except Exception as e:
         print(f"  Error generating PDF for {year}: {e}")
+        import traceback
+        traceback.print_exc()
         return False
 
 
 def generate_json_sidecar(year: int, tax_result: TaxResult, yearly_data: YearlyData, output_path: Path):
     """Generate JSON sidecar with expected values for extraction validation."""
+    fields = {
+        "wages": {"expected": str(tax_result.wages) if tax_result.wages else None, "tolerance": 0, "allow_null": tax_result.wages == 0},
+        "taxable_interest": {"expected": str(tax_result.interest) if tax_result.interest else None, "tolerance": 0, "allow_null": True},
+        "ordinary_dividends": {"expected": str(tax_result.dividends) if tax_result.dividends else None, "tolerance": 0, "allow_null": True},
+        "capital_gains": {"expected": str(tax_result.capital_gains) if tax_result.capital_gains else None, "tolerance": 0, "allow_null": True},
+        "total_income": {"expected": str(tax_result.total_income), "tolerance": 0},
+        "adjustments": {"expected": str(tax_result.adjustments) if tax_result.adjustments else None, "tolerance": 0, "allow_null": True},
+        "agi": {"expected": str(tax_result.agi), "tolerance": 0},
+        "deductions": {"expected": str(tax_result.deduction_amount), "tolerance": 0},
+        "taxable_income": {"expected": str(tax_result.taxable_income), "tolerance": 0},
+        "tax_amount": {"expected": str(tax_result.tax_on_ordinary_income), "tolerance": 0},
+        "child_tax_credit": {"expected": str(tax_result.child_tax_credit) if tax_result.child_tax_credit else None, "tolerance": 0, "allow_null": True},
+        "total_tax": {"expected": str(tax_result.total_tax), "tolerance": 0},
+        "federal_withholding": {"expected": str(tax_result.withholding), "tolerance": 0},
+        "estimated_payments": {"expected": str(tax_result.estimated_payments) if tax_result.estimated_payments else None, "tolerance": 0, "allow_null": True},
+        "total_payments": {"expected": str(tax_result.total_payments), "tolerance": 0},
+        "refund": {"expected": str(tax_result.refund) if tax_result.refund else None, "tolerance": 0, "allow_null": True},
+        "amount_owed": {"expected": str(tax_result.amount_owed) if tax_result.amount_owed else None, "tolerance": 0, "allow_null": True},
+    }
+
+    # Add Schedule A fields if present
+    if yearly_data.schedule_a:
+        sa = yearly_data.schedule_a
+        fields.update({
+            "scheda_salt_deduction": {"expected": str(sa.salt_deduction) if sa.salt_deduction else None, "tolerance": 0, "allow_null": True},
+            "scheda_mortgage_interest_1098": {"expected": str(sa.mortgage_interest) if sa.mortgage_interest else None, "tolerance": 0, "allow_null": True},
+            "scheda_charity_cash": {"expected": str(sa.charity_cash) if sa.charity_cash else None, "tolerance": 0, "allow_null": True},
+            "scheda_charity_noncash": {"expected": str(sa.charity_noncash) if sa.charity_noncash else None, "tolerance": 0, "allow_null": True},
+            "scheda_total_itemized": {"expected": str(sa.total_itemized) if sa.total_itemized else None, "tolerance": 0, "allow_null": True},
+        })
+
+    # Add Schedule 1 fields if present
+    if yearly_data.schedule_1:
+        s1 = yearly_data.schedule_1
+        fields.update({
+            "sched1_educator_expenses": {"expected": str(s1.educator_expenses) if s1.educator_expenses else None, "tolerance": 0, "allow_null": True},
+            "sched1_hsa_deduction": {"expected": str(s1.hsa_deduction) if s1.hsa_deduction else None, "tolerance": 0, "allow_null": True},
+            "sched1_student_loan_interest": {"expected": str(s1.student_loan_interest) if s1.student_loan_interest else None, "tolerance": 0, "allow_null": True},
+            "sched1_ira_deduction": {"expected": str(s1.ira_deduction) if s1.ira_deduction else None, "tolerance": 0, "allow_null": True},
+            "sched1_total_adjustments": {"expected": str(s1.total_adjustments) if s1.total_adjustments else None, "tolerance": 0, "allow_null": True},
+        })
+
+    # Add Schedule C fields if present
+    if yearly_data.schedule_c:
+        sc = yearly_data.schedule_c
+        fields.update({
+            "schedc_gross_receipts": {"expected": str(sc.gross_receipts) if sc.gross_receipts else None, "tolerance": 0, "allow_null": True},
+            "schedc_total_expenses": {"expected": str(sc.total_expenses) if sc.total_expenses else None, "tolerance": 0, "allow_null": True},
+            "schedc_net_profit": {"expected": str(sc.net_profit) if sc.net_profit else None, "tolerance": 0, "allow_null": True},
+        })
+
+    # Build detected forms list
+    detected_forms = ["Form 1040"]
+    if yearly_data.schedule_1:
+        detected_forms.append("Schedule 1")
+    if yearly_data.schedule_a:
+        detected_forms.append("Schedule A")
+    if yearly_data.schedule_c:
+        detected_forms.append("Schedule C")
+
     json_data = {
         "pdf_file": output_path.name,
         "tax_year": year,
         "filing_status": tax_result.filing_status,
-        "fields": {
-            "wages": {"expected": str(tax_result.wages) if tax_result.wages else None, "tolerance": 0, "allow_null": tax_result.wages == 0},
-            "taxable_interest": {"expected": str(tax_result.interest) if tax_result.interest else None, "tolerance": 0, "allow_null": True},
-            "ordinary_dividends": {"expected": str(tax_result.dividends) if tax_result.dividends else None, "tolerance": 0, "allow_null": True},
-            "capital_gains": {"expected": str(tax_result.capital_gains) if tax_result.capital_gains else None, "tolerance": 0, "allow_null": True},
-            "total_income": {"expected": str(tax_result.total_income), "tolerance": 0},
-            "adjustments": {"expected": str(tax_result.adjustments) if tax_result.adjustments else None, "tolerance": 0, "allow_null": True},
-            "agi": {"expected": str(tax_result.agi), "tolerance": 0},
-            "deductions": {"expected": str(tax_result.deduction_amount), "tolerance": 0},
-            "taxable_income": {"expected": str(tax_result.taxable_income), "tolerance": 0},
-            "tax_amount": {"expected": str(tax_result.tax_on_ordinary_income), "tolerance": 0},
-            "child_tax_credit": {"expected": str(tax_result.child_tax_credit) if tax_result.child_tax_credit else None, "tolerance": 0, "allow_null": True},
-            "total_tax": {"expected": str(tax_result.total_tax), "tolerance": 0},
-            "federal_withholding": {"expected": str(tax_result.withholding), "tolerance": 0},
-            "estimated_payments": {"expected": str(tax_result.estimated_payments) if tax_result.estimated_payments else None, "tolerance": 0, "allow_null": True},
-            "total_payments": {"expected": str(tax_result.total_payments), "tolerance": 0},
-            "refund": {"expected": str(tax_result.refund) if tax_result.refund else None, "tolerance": 0, "allow_null": True},
-            "amount_owed": {"expected": str(tax_result.amount_owed) if tax_result.amount_owed else None, "tolerance": 0, "allow_null": True},
-        },
+        "detected_forms": detected_forms,
+        "fields": fields,
         "metadata": {
             "persona": f"{yearly_data.first_name} {yearly_data.last_name}",
             "scenario": f"Year {year} - {tax_result.filing_status}",
@@ -697,9 +1126,9 @@ def generate_persona(persona_name: str, persona_data: Dict[int, YearlyData], yea
         )
         result = calc.calculate(tax_input)
 
-        # Generate PDF with template overlay
+        # Generate PDF with template overlay (pass yearly data for schedules)
         pdf_path = output_dir / f"1040_{year}.pdf"
-        success = generate_filled_pdf(year, result, pdf_path)
+        success = generate_filled_pdf(year, result, pdf_path, yearly)
 
         # Generate JSON sidecar
         if success:

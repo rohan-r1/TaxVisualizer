@@ -28,7 +28,13 @@ except ImportError:
     }))
     sys.exit(1)
 
-from mappings import detect_form_year, detect_schedules, get_field_mapping, get_supported_years
+from mappings import (
+    detect_form_year,
+    detect_schedules,
+    get_field_mapping,
+    get_schedule_mapping,
+    get_supported_years,
+)
 
 
 def parse_currency(text: str) -> Optional[str]:
@@ -94,6 +100,8 @@ def extract_field(page, bbox: tuple) -> str:
     Uses character-level filtering based on vertical midpoint to avoid
     capturing adjacent values when rows are tightly spaced.
 
+    Also checks form field annotations for IRS fillable PDFs.
+
     Args:
         page: pdfplumber page object
         bbox: Tuple of (x0, y0, x1, y1) coordinates
@@ -104,9 +112,7 @@ def extract_field(page, bbox: tuple) -> str:
     try:
         x0, y0, x1, y1 = bbox
 
-        # Filter characters where the vertical midpoint is within the bbox
-        # This avoids capturing characters from adjacent rows that just
-        # touch the bbox boundary
+        # First, try to extract from regular text characters
         def char_in_bbox(char):
             char_mid_y = (char['top'] + char['bottom']) / 2
             return (x0 <= char['x0'] < x1 and
@@ -114,17 +120,101 @@ def extract_field(page, bbox: tuple) -> str:
 
         chars = [c for c in page.chars if char_in_bbox(c)]
 
-        if not chars:
-            return ""
+        if chars:
+            # Sort by position (left to right)
+            chars.sort(key=lambda c: c['x0'])
+            # Join characters into text
+            text = ''.join(c['text'] for c in chars)
+            if text.strip():
+                return text.strip()
 
-        # Sort by position (left to right)
-        chars.sort(key=lambda c: c['x0'])
+        # If no text found, check form field annotations
+        # This handles IRS fillable PDFs where values are stored in annotations
+        if hasattr(page, 'annots') and page.annots:
+            for annot in page.annots:
+                if annot and 'data' in annot:
+                    # Check if annotation is within bbox
+                    annot_top = annot.get('top', 0)
+                    annot_x0 = annot.get('x0', 0)
 
-        # Join characters into text
-        text = ''.join(c['text'] for c in chars)
-        return text.strip()
+                    # Use generous matching for y (within 10 points)
+                    # and check x is within our range
+                    if (abs(annot_top - y0) < 10 or (y0 <= annot_top < y1)) and \
+                       (x0 - 50 <= annot_x0 < x1 + 50):
+                        # Extract value from annotation
+                        data = annot['data']
+                        if 'V' in data:
+                            v = data['V']
+                            if isinstance(v, bytes):
+                                v = v.decode('utf-8', errors='replace')
+                            if v and str(v).strip():
+                                return str(v).strip()
+
+        return ""
     except Exception:
         return ""
+
+
+def extract_schedule_fields(
+    pdf, schedule_page_idx: int, schedule_mapping: Dict[str, Any],
+    schedule_type: str, year: int
+) -> List[Dict[str, Any]]:
+    """
+    Extract fields from a schedule page.
+
+    Args:
+        pdf: pdfplumber PDF object
+        schedule_page_idx: The absolute page index where the schedule starts
+        schedule_mapping: Dictionary of field definitions for this schedule
+        schedule_type: The type of schedule (e.g., 'schedule_1', 'schedule_a', 'schedule_c')
+        year: The tax year (for logging/debugging)
+
+    Returns:
+        List of extracted field dictionaries
+    """
+    fields: List[Dict[str, Any]] = []
+
+    for field_key, config in schedule_mapping.items():
+        # The mapping's page is relative to the schedule start
+        relative_page = config.get("page", 0)
+        absolute_page = schedule_page_idx + relative_page
+
+        # Make sure we have enough pages
+        if absolute_page >= len(pdf.pages):
+            continue
+
+        page = pdf.pages[absolute_page]
+        bbox = config.get("bbox")
+
+        if not bbox:
+            continue
+
+        # Extract raw text from bounding box
+        raw_text = extract_field(page, bbox)
+
+        # Parse as currency value
+        value = parse_currency(raw_text)
+
+        # Calculate confidence based on whether we got a valid value
+        if value and int(value) >= 0:
+            confidence = 0.95  # High confidence for successful extraction
+        elif value:
+            confidence = 0.90  # Slightly lower for negative values
+        else:
+            confidence = 0.50  # No value extracted - needs review
+
+        fields.append({
+            "key": field_key,
+            "label": config.get("label", field_key),
+            "value": value,
+            "raw_text": raw_text,
+            "category": config.get("category", schedule_type),
+            "line_number": config.get("line", ""),
+            "confidence": confidence,
+            "page": absolute_page,
+        })
+
+    return fields
 
 
 def extract_form_1040(pdf_path: str) -> Dict[str, Any]:
@@ -217,13 +307,21 @@ def extract_form_1040(pdf_path: str) -> Dict[str, Any]:
             # Detect which schedules are present in the PDF
             schedules = detect_schedules(pdf)
 
-            # Build the detected_forms list
+            # Build the detected_forms list and extract schedule fields
             detected_forms = ["Form 1040"]
             for schedule_type, page_idx in schedules.items():
                 if page_idx is not None:
                     # Convert schedule_1 -> Schedule 1, schedule_a -> Schedule A, etc.
                     name = schedule_type.replace("_", " ").title()
                     detected_forms.append(name)
+
+                    # Extract fields from this schedule
+                    schedule_mapping = get_schedule_mapping(schedule_type, year)
+                    if schedule_mapping:
+                        schedule_fields = extract_schedule_fields(
+                            pdf, page_idx, schedule_mapping, schedule_type, year
+                        )
+                        fields.extend(schedule_fields)
 
             return {
                 "year": year,

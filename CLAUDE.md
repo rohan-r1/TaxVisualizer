@@ -118,10 +118,10 @@ MVP fully functional with real PDF extraction and comprehensive test data infras
 
 ### Active Issues
 - **ROH-15:** Encryption at rest — deferred (waiting for official SQLCipher support in tauri-plugin-sql)
-- **ROH-16:** PDF extraction pipeline — Tier 2 complete; Tier 3 (OCR) and Tier 4 (LLM validation) deferred
+- **ROH-31:** Make fonts and font sizes uniform across the application (Medium priority)
 
 ## Next Steps
-1. **UX improvements** — Focus shifts from infrastructure to user experience
+1. **ROH-31:** Standardize typography — audit and unify font usage (Inter for UI, JetBrains Mono for numbers/data)
 2. **ROH-22:** Review which extracted fields to display in summary
 3. **Confidence/Review Flow** — Flag low-confidence fields for user correction
 4. **ROH-15:** Monitor for official SQLCipher support, then implement encryption

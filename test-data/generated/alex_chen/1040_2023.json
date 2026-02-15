@@ -2,6 +2,11 @@
   "pdf_file": "1040_2023.pdf",
   "tax_year": 2023,
   "filing_status": "Married Filing Jointly",
+  "detected_forms": [
+    "Form 1040",
+    "Schedule 1",
+    "Schedule A"
+  ],
   "fields": {
     "wages": {
       "expected": "120000",
@@ -28,12 +33,12 @@
       "tolerance": 0
     },
     "adjustments": {
-      "expected": null,
+      "expected": "14550",
       "tolerance": 0,
       "allow_null": true
     },
     "agi": {
-      "expected": "124600",
+      "expected": "110050",
       "tolerance": 0
     },
     "deductions": {
@@ -41,11 +46,11 @@
       "tolerance": 0
     },
     "taxable_income": {
-      "expected": "96900",
+      "expected": "82350",
       "tolerance": 0
     },
     "tax_amount": {
-      "expected": "11933",
+      "expected": "9442",
       "tolerance": 0
     },
     "child_tax_credit": {
@@ -54,7 +59,7 @@
       "allow_null": true
     },
     "total_tax": {
-      "expected": "11933",
+      "expected": "9442",
       "tolerance": 0
     },
     "federal_withholding": {
@@ -71,12 +76,62 @@
       "tolerance": 0
     },
     "refund": {
-      "expected": "7067",
+      "expected": "9558",
       "tolerance": 0,
       "allow_null": true
     },
     "amount_owed": {
       "expected": null,
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "scheda_salt_deduction": {
+      "expected": "10000",
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "scheda_mortgage_interest_1098": {
+      "expected": "11500",
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "scheda_charity_cash": {
+      "expected": "4000",
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "scheda_charity_noncash": {
+      "expected": "500",
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "scheda_total_itemized": {
+      "expected": "26000",
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "sched1_educator_expenses": {
+      "expected": "300",
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "sched1_hsa_deduction": {
+      "expected": "7750",
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "sched1_student_loan_interest": {
+      "expected": null,
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "sched1_ira_deduction": {
+      "expected": "6500",
+      "tolerance": 0,
+      "allow_null": true
+    },
+    "sched1_total_adjustments": {
+      "expected": "14550",
       "tolerance": 0,
       "allow_null": true
     }
