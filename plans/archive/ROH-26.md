@@ -2,7 +2,7 @@
 
 **Issue:** [ROH-26](https://linear.app/rohanr/issue/ROH-26/recalibrate-pdf-extractor-mappings-to-match-irs-templates)
 **Priority:** High
-**Status:** Planning
+**Status:** Complete
 
 ---
 

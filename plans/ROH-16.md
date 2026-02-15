@@ -2,13 +2,13 @@
 
 **Issue:** [ROH-16](https://linear.app/rohanr/issue/ROH-16/real-pdf-extraction-pipeline-replace-mock-extraction)
 **Priority:** Low
-**Status:** In Progress (Tier 2 working for 2018-2019)
+**Status:** In Progress (Tier 2 complete, Tier 3-4 remaining)
 
-> **Update (2026-02-14):** Python sidecar with pdfplumber is now working. Tier 2 extraction functional for 2018-2019 Form 1040s. Tauri shell permissions configured correctly. Mappings calibrated against sample PDFs and official IRS templates.
+> **Update (2026-02-16):** Tier 2 (digital PDF extraction) is fully complete. Python sidecar with pdfplumber working. All mappings calibrated for 2018-2024 (ROH-26). Extractions verified against both Alex Chen and Maria Garcia test personas.
 >
 > **Remaining work:**
-> - Calibrate mappings for 2020-2024 forms
-> - Tier 3 (OCR) and Tier 4 (LLM validation) still deferred
+> - Tier 3 (OCR for scanned PDFs) - deferred until needed
+> - Tier 4 (LLM validation) - deferred until needed
 > - See ROH-22 for field display review
 
 ---
