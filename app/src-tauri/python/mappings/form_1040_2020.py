@@ -231,9 +231,11 @@ FIELDS = {
     },
 
     # Line 24: Total tax - Value: 32
+    # Measured mid_y=137.4, x starts at 550.5
+    # Expanded x0 from 551 to 545 to capture all digits
     "total_tax": {
         "page": 1,
-        "bbox": (551, 134, 573, 146),
+        "bbox": (545, 134, 573, 141),
         "label": "Total tax",
         "category": "tax_computation",
         "line": "24",

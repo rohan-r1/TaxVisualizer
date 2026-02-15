@@ -1,5 +1,34 @@
 # Work Log
 
+## 2026-02-16
+
+### Work Done
+- ROH-26: Recalibrated PDF extractor mappings for years 2018-2021
+  - 2018: Complete recalibration to page 0, tight y-ranges around character midpoints
+  - 2019: Complete rewrite with measured positions from generated PDFs
+  - 2020: Fixed total_tax truncation (x0 was missing leading digit)
+  - 2021: Complete rewrite with wider x-range for 6-digit numbers
+- All Alex Chen returns (2018-2024) now extract correctly
+- All Maria Garcia returns (2019-2024) now extract correctly
+- 151 tests passing
+
+### Debugging Approach
+- Used pdfplumber to inspect exact character positions (x0, mid_y)
+- Tightened bbox y-ranges to ±3-5pt around measured midpoints to avoid template text overlap
+- Widened bbox x-ranges (x0=515-525) to capture longer numbers
+
+### Issues Encountered
+- Template text at close y-positions caused mixed extractions — fixed with tighter y-ranges
+- 6-digit numbers (105000) started at x=519.5, bbox x0=520 missed first digit — widened to x0=515
+- Maria Garcia 2018 has coversheet on page 0, values on page 1 (generator inconsistency, not extractor issue)
+
+### Next Steps
+- Fix generator coversheet handling for consistent page structure
+- ROH-11: Move upload button to sidebar below returns list
+- ROH-15: Encryption at rest with SQLCipher
+
+---
+
 ## 2026-02-15
 
 ### Work Done

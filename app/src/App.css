@@ -80,12 +80,6 @@
   color: var(--text-primary);
 }
 
-.app-header-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
 /* Main content area */
 .app-main {
   display: flex;
@@ -137,6 +131,12 @@
 
 .upload-btn:active {
   transform: scale(0.98);
+}
+
+/* Sidebar upload button - full width below returns */
+.app-sidebar .upload-btn {
+  width: 100%;
+  margin-top: 1rem;
 }
 
 /* Error banner */

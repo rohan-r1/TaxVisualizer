@@ -431,22 +431,22 @@ TEMPLATE_COVERSHEET_PAGES = {
 TEMPLATE_FIELD_OVERRIDES = {
     2018: {
         # 2018 Form 1040 - "postcard" format, different layout
-        # Page 1 (after skipping coversheet) has income and tax on same page
+        # After coversheet removal, form is on page 0 of output
         # Value boxes: left edge ~461, cents divider at 554, so dollars right-align at 552
-        "wages":              {"page": 1, "bbox": (461, 41, 552, 51)},
-        "taxable_interest":   {"page": 1, "bbox": (461, 53, 552, 63)},
-        "ordinary_dividends": {"page": 1, "bbox": (461, 65, 552, 75)},
-        "total_income":       {"page": 1, "bbox": (461, 101, 552, 111)},
-        "agi":                {"page": 1, "bbox": (461, 119, 552, 129)},
-        "deductions":         {"page": 1, "bbox": (461, 131, 552, 141)},
-        "taxable_income":     {"page": 1, "bbox": (461, 155, 552, 165)},
-        "tax_amount":         {"page": 1, "bbox": (170, 167, 230, 177)},  # Left column for 11a
-        "total_tax":          {"page": 1, "bbox": (461, 227, 552, 237)},
-        "federal_withholding": {"page": 1, "bbox": (461, 239, 552, 249)},
-        "total_payments":     {"page": 1, "bbox": (461, 275, 552, 285)},
-        "overpaid":           {"page": 1, "bbox": (461, 287, 552, 297)},
-        "refund":             {"page": 1, "bbox": (461, 299, 552, 309)},
-        "amount_owed":        {"page": 1, "bbox": (461, 347, 552, 357)},
+        "wages":              {"page": 0, "bbox": (461, 41, 552, 51)},
+        "taxable_interest":   {"page": 0, "bbox": (461, 53, 552, 63)},
+        "ordinary_dividends": {"page": 0, "bbox": (461, 65, 552, 75)},
+        "total_income":       {"page": 0, "bbox": (461, 101, 552, 111)},
+        "agi":                {"page": 0, "bbox": (461, 119, 552, 129)},
+        "deductions":         {"page": 0, "bbox": (461, 131, 552, 141)},
+        "taxable_income":     {"page": 0, "bbox": (461, 155, 552, 165)},
+        "tax_amount":         {"page": 0, "bbox": (170, 167, 230, 177)},  # Left column for 11a
+        "total_tax":          {"page": 0, "bbox": (461, 227, 552, 237)},
+        "federal_withholding": {"page": 0, "bbox": (461, 239, 552, 249)},
+        "total_payments":     {"page": 0, "bbox": (461, 275, 552, 285)},
+        "overpaid":           {"page": 0, "bbox": (461, 287, 552, 297)},
+        "refund":             {"page": 0, "bbox": (461, 299, 552, 309)},
+        "amount_owed":        {"page": 0, "bbox": (461, 347, 552, 357)},
     },
     2019: {
         # 2019 Form 1040 - 2 pages after coversheet (income on page 0, tax on page 1)

@@ -1,35 +1,13 @@
 """
-Form 1040 (2018) field mappings - BACKFILLED to full coverage.
+Form 1040 (2018) field mappings - Calibrated for IRS blank templates.
 
-Calibrated against: 1040_2018_sample.pdf
-Page dimensions: 612 x 1008 points (sample PDF)
-Note: Official IRS template has 612 x 792 and different page structure.
+Calibrated against: IRS blank template f1040--2018.pdf + generated test PDFs
+Page dimensions: 612 x 792 points
+Note: Template has coversheet on page 0; after removal, form is on page 0 of output.
 
 The 2018 Form 1040 was a major redesign (the "postcard" form).
-Page 0: Personal info, filing status, signature
-Page 1: Income, tax, payments, refund (this is "Page 2" printed on form)
-
-Line structure for 2018 Form 1040:
-- Lines 1-5: Income components (wages, interest, dividends, IRA, pensions)
-- Line 6: Total income (add lines 1-5 + Schedule 1, line 22)
-- Line 7: Adjusted gross income (AGI)
-- Line 8: Standard or itemized deduction
-- Line 9: QBI deduction
-- Line 10: Taxable income
-- Line 11a: Tax (left column)
-- Line 11b: Additional tax from Schedule 2
-- Line 12a: Child tax credit
-- Line 12b: Additional credits from Schedule 3
-- Line 13: Tax minus credits
-- Line 14: Other taxes (Schedule 4)
-- Line 15: Total tax
-- Line 16: Federal withholding
-- Line 17: Refundable credits
-- Line 18: Total payments
-- Line 19: Overpayment
-- Line 20a: Refund
-- Line 21: Applied to next year
-- Line 22: Amount owed
+After coversheet removal in generated PDFs:
+Page 0: Income, tax, payments, refund (the main form)
 
 Coordinate system:
 - Origin (0, 0) is top-left
@@ -37,230 +15,235 @@ Coordinate system:
 - Units are PDF points (1/72 inch)
 
 Bounding box format: (x0, y0, x1, y1)
+- Values are right-aligned around x=547
+- Use x0=510 to capture full numbers without template text
+- Use tight vertical ranges (~10pts) based on measured character midpoints
 """
 
 FIELDS = {
-    # === PAGE 1 (index 1): Main income and tax ===
+    # === PAGE 0 (index 0): Main income and tax ===
+    # Values measured: characters have mid_y values at specific positions
+    # Using ±5pt around mid_y for tight capture
 
-    # Line 1: Wages, salaries, tips
+    # Line 1: Wages - measured mid_y=43.4
     "wages": {
-        "page": 1,
-        "bbox": (547, 128, 594, 141),
+        "page": 0,
+        "bbox": (510, 38, 575, 48),
         "label": "Wages, salaries, tips",
         "category": "income",
         "line": "1",
     },
 
-    # Line 2b: Taxable interest (right column of line 2)
+    # Line 2b: Taxable interest - measured mid_y=55.4
+    # Template text at mid_y=53.6, value at mid_y=55.4
+    # Tightened y0 to 54 to exclude template text
     "taxable_interest": {
-        "page": 1,
-        "bbox": (547, 140, 594, 153),
+        "page": 0,
+        "bbox": (525, 54, 575, 58),
         "label": "Taxable interest",
         "category": "income",
         "line": "2b",
     },
 
-    # Line 3b: Ordinary dividends (right column of line 3)
+    # Line 3b: Ordinary dividends - estimate mid_y≈67
     "ordinary_dividends": {
-        "page": 1,
-        "bbox": (547, 152, 594, 165),
+        "page": 0,
+        "bbox": (510, 62, 575, 72),
         "label": "Ordinary dividends",
         "category": "income",
         "line": "3b",
     },
 
-    # Line 4b: IRA distributions taxable (right column of line 4)
+    # Line 4b: IRA distributions - estimate mid_y≈79
     "ira_distributions": {
-        "page": 1,
-        "bbox": (547, 164, 594, 177),
+        "page": 0,
+        "bbox": (510, 74, 575, 84),
         "label": "IRA distributions",
         "category": "income",
         "line": "4b",
     },
 
-    # Line 5b: Pensions taxable (right column of line 5)
+    # Line 5b: Pensions - estimate mid_y≈91
     "pensions": {
-        "page": 1,
-        "bbox": (547, 176, 594, 189),
+        "page": 0,
+        "bbox": (510, 86, 575, 96),
         "label": "Pensions and annuities",
         "category": "income",
         "line": "5b",
     },
 
-    # Line 6: Total income (add lines 1-5 + Schedule 1, line 22)
+    # Line 6: Total income - measured mid_y=103.4
     "total_income": {
-        "page": 1,
-        "bbox": (547, 188, 594, 201),
+        "page": 0,
+        "bbox": (510, 98, 575, 108),
         "label": "Total income",
         "category": "income",
         "line": "6",
     },
 
-    # Line 7: Adjusted gross income
+    # Line 7: AGI - measured mid_y=121.4
     "agi": {
-        "page": 1,
-        "bbox": (547, 212, 594, 225),
+        "page": 0,
+        "bbox": (510, 116, 575, 126),
         "label": "Adjusted gross income",
         "category": "income",
         "line": "7",
     },
 
-    # Line 8: Standard or itemized deduction
+    # Line 8: Deductions - measured mid_y=133.4
     "deductions": {
-        "page": 1,
-        "bbox": (547, 224, 594, 237),
+        "page": 0,
+        "bbox": (510, 128, 575, 138),
         "label": "Standard/itemized deduction",
         "category": "deductions",
         "line": "8",
     },
 
-    # Line 9: QBI deduction
+    # Line 9: QBI deduction - estimate mid_y≈145
     "qbi_deduction": {
-        "page": 1,
-        "bbox": (547, 236, 594, 249),
+        "page": 0,
+        "bbox": (510, 140, 575, 150),
         "label": "QBI deduction",
         "category": "deductions",
         "line": "9",
     },
 
-    # Line 10: Taxable income
+    # Line 10: Taxable income - measured mid_y=157.4
     "taxable_income": {
-        "page": 1,
-        "bbox": (547, 248, 594, 261),
+        "page": 0,
+        "bbox": (510, 152, 575, 162),
         "label": "Taxable income",
         "category": "income",
         "line": "10",
     },
 
-    # Line 11a: Tax (from tax tables or Schedule 2)
+    # Line 11a: Tax - LEFT COLUMN - estimate mid_y≈170
     "tax_amount": {
-        "page": 1,
-        "bbox": (216, 262, 249, 275),
+        "page": 0,
+        "bbox": (150, 165, 250, 175),
         "label": "Tax",
         "category": "tax_computation",
         "line": "11a",
     },
 
-    # Line 11b: Schedule 2 tax (additional tax)
+    # Line 11b: Schedule 2 tax - RIGHT COLUMN
     "schedule_2_tax": {
-        "page": 1,
-        "bbox": (554, 262, 595, 275),
+        "page": 0,
+        "bbox": (510, 165, 575, 175),
         "label": "Schedule 2 tax",
         "category": "tax_computation",
         "line": "11b",
     },
 
-    # Line 12a: Child tax credit (left column)
+    # Line 12a: Child tax credit - LEFT COLUMN
     "child_tax_credit": {
-        "page": 1,
-        "bbox": (216, 284, 249, 297),
+        "page": 0,
+        "bbox": (150, 189, 250, 199),
         "label": "Child tax credit",
         "category": "credits",
         "line": "12a",
     },
 
-    # Line 12b: Credits from Schedule 3 (right column)
+    # Line 12b: Schedule 3 credits - RIGHT COLUMN
     "schedule_3_credits": {
-        "page": 1,
-        "bbox": (554, 284, 595, 297),
+        "page": 0,
+        "bbox": (510, 189, 575, 199),
         "label": "Schedule 3 credits",
         "category": "credits",
         "line": "12b",
     },
 
-    # Line 13: Tax minus credits
+    # Line 13: Tax after credits - estimate mid_y≈205
     "tax_after_credits": {
-        "page": 1,
-        "bbox": (547, 296, 594, 309),
+        "page": 0,
+        "bbox": (510, 200, 575, 210),
         "label": "Tax after credits",
         "category": "tax_computation",
         "line": "13",
     },
 
-    # Line 14: Other taxes from Schedule 4
+    # Line 14: Other taxes - estimate mid_y≈217
     "other_taxes": {
-        "page": 1,
-        "bbox": (554, 308, 595, 321),
+        "page": 0,
+        "bbox": (510, 212, 575, 222),
         "label": "Other taxes",
         "category": "tax_computation",
         "line": "14",
     },
 
-    # Line 15: Total tax
+    # Line 15: Total tax - measured mid_y=229.4
     "total_tax": {
-        "page": 1,
-        "bbox": (547, 336, 594, 349),
+        "page": 0,
+        "bbox": (510, 224, 575, 234),
         "label": "Total tax",
         "category": "tax_computation",
         "line": "15",
     },
 
-    # Line 16: Federal income tax withheld
+    # Line 16: Federal withholding - measured mid_y=241.4
     "federal_withholding": {
-        "page": 1,
-        "bbox": (554, 348, 595, 361),
+        "page": 0,
+        "bbox": (510, 236, 575, 246),
         "label": "Federal withholding",
         "category": "payments",
         "line": "16",
     },
 
-    # Line 17: Refundable credits from Schedule 5
+    # Line 17: Other payments - estimate mid_y≈253
     "other_payments": {
-        "page": 1,
-        "bbox": (554, 360, 595, 373),
+        "page": 0,
+        "bbox": (510, 248, 575, 258),
         "label": "Refundable credits",
         "category": "payments",
         "line": "17",
     },
 
-    # Line 18: Total payments
+    # Line 18: Total payments - measured mid_y=277.4
+    # Value at mid_y=277.4, template text at mid_y=282.0
+    # Tightened y1 to 280 to exclude template text
     "total_payments": {
-        "page": 1,
-        "bbox": (554, 392, 595, 405),
+        "page": 0,
+        "bbox": (525, 275, 575, 280),
         "label": "Total payments",
         "category": "payments",
         "line": "18",
     },
 
-    # Line 19: Overpayment
+    # Line 19: Overpaid - measured mid_y=289.4
     "overpaid": {
-        "page": 1,
-        "bbox": (554, 404, 595, 417),
+        "page": 0,
+        "bbox": (510, 284, 575, 294),
         "label": "Amount overpaid",
         "category": "refund_owed",
         "line": "19",
     },
 
-    # Line 20a: Refund amount
+    # Line 20a: Refund - measured mid_y=301.4
+    # Template text at mid_y=299.6, value at mid_y=301.4
+    # Tightened y0 to 300 to exclude template text
     "refund": {
-        "page": 1,
-        "bbox": (554, 416, 595, 429),
+        "page": 0,
+        "bbox": (525, 300, 575, 304),
         "label": "Refund",
         "category": "refund_owed",
         "line": "20a",
     },
 
-    # Line 21: Applied to next year estimated tax
+    # Line 21: Applied to next year - estimate mid_y≈337
     "applied_to_next_year": {
-        "page": 1,
-        "bbox": (554, 452, 595, 465),
+        "page": 0,
+        "bbox": (510, 332, 575, 342),
         "label": "Applied to next year",
         "category": "refund_owed",
         "line": "21",
     },
 
-    # Line 22: Amount you owe
+    # Line 22: Amount owed - estimate mid_y≈349
     "amount_owed": {
-        "page": 1,
-        "bbox": (554, 464, 595, 477),
+        "page": 0,
+        "bbox": (510, 344, 575, 354),
         "label": "Amount you owe",
         "category": "refund_owed",
         "line": "22",
     },
-
-    # Note: Some 2024-style fields don't exist in 2018:
-    # - social_security: Reported differently in 2018 (not a separate line on main form)
-    # - capital_gains: Reported on Schedule D, flows to Schedule 1
-    # - adjustments: Part of AGI calculation (line 6 to 7), not a separate field
-    # - estimated_payments: Included in line 18 total
 }

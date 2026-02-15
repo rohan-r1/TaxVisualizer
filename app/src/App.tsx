@@ -147,9 +147,6 @@ function App() {
     <div className="app">
       <header className="app-header">
         <h1>TaxVisualizer</h1>
-        <div className="app-header-actions">
-          <UploadButton onFileSelected={handleFileSelected} />
-        </div>
       </header>
 
       {error && (
@@ -163,6 +160,7 @@ function App() {
         <main className="app-main">
           <aside className="app-sidebar">
             <ReturnsList returns={returns} onDelete={handleDelete} />
+            <UploadButton onFileSelected={handleFileSelected} />
           </aside>
           <div className="app-content-wrapper">
             <section className="app-content">
