@@ -23,14 +23,11 @@ export function ChatbotPanel({
   summaries,
   onOpenSettings,
 }: ChatbotPanelProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [streamingContent, setStreamingContent] = useState("");
   const streamingContentRef = useRef("");  // Tracks current value for use in closures
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const collapsedInputRef = useRef<HTMLInputElement>(null);
-  const panelRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
     if (messagesEndRef.current && typeof messagesEndRef.current.scrollIntoView === "function") {
@@ -41,27 +38,6 @@ export function ChatbotPanel({
   useEffect(() => {
     scrollToBottom();
   }, [messages, streamingContent]);
-
-  // Click outside to collapse
-  useEffect(() => {
-    if (!isExpanded) return;
-
-    const handleClickOutside = (event: MouseEvent) => {
-      if (panelRef.current && !panelRef.current.contains(event.target as Node)) {
-        setIsExpanded(false);
-      }
-    };
-
-    // Use setTimeout to avoid immediately triggering on the click that expanded
-    const timeoutId = setTimeout(() => {
-      document.addEventListener("mousedown", handleClickOutside);
-    }, 0);
-
-    return () => {
-      clearTimeout(timeoutId);
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isExpanded]);
 
   const handleSendMessage = async (content: string) => {
     const userMessage: Message = {
@@ -125,46 +101,8 @@ export function ChatbotPanel({
     }
   };
 
-  const handleCollapsedSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const input = collapsedInputRef.current;
-    if (input && input.value.trim()) {
-      handleSendMessage(input.value.trim());
-      input.value = "";
-      setIsExpanded(true);
-    }
-  };
-
-  // Collapsed view: just the input bar
-  if (!isExpanded) {
-    return (
-      <div className="chatbot-panel chatbot-collapsed">
-        <form className="chatbot-input-bar" onSubmit={handleCollapsedSubmit}>
-          <input
-            ref={collapsedInputRef}
-            type="text"
-            placeholder="Ask me anything about your tax returns!"
-            onFocus={() => setIsExpanded(true)}
-          />
-          <button
-            type="button"
-            className="chatbot-bar-btn"
-            onClick={onOpenSettings}
-            title="Settings"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="12" cy="12" r="3" />
-              <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
-            </svg>
-          </button>
-        </form>
-      </div>
-    );
-  }
-
-  // Expanded view: full panel with header, messages, and input
   return (
-    <div ref={panelRef} className="chatbot-panel chatbot-expanded">
+    <div className="chatbot-panel">
       <div className="chatbot-header">
         <h3>Tax Assistant</h3>
         <div className="chatbot-header-actions">
@@ -176,15 +114,6 @@ export function ChatbotPanel({
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <circle cx="12" cy="12" r="3" />
               <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
-            </svg>
-          </button>
-          <button
-            className="chatbot-header-btn"
-            onClick={() => setIsExpanded(false)}
-            title="Minimize"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M6 9l6 6 6-6" />
             </svg>
           </button>
         </div>

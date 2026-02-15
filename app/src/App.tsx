@@ -162,22 +162,20 @@ function App() {
             <ReturnsList returns={returns} onDelete={handleDelete} />
             <UploadButton onFileSelected={handleFileSelected} />
           </aside>
-          <div className="app-content-wrapper">
-            <section className="app-content">
-              <Dashboard
-                returns={returns}
-                fields={fields}
-                summaries={summaries}
-              />
-            </section>
-            {/* Chatbot panel - always visible, expands on focus */}
-            <ChatbotPanel
+          {/* Chatbot panel - full-height left column */}
+          <ChatbotPanel
+            returns={returns}
+            fields={fields}
+            summaries={summaries}
+            onOpenSettings={() => setSettingsOpen(true)}
+          />
+          <section className="app-content">
+            <Dashboard
               returns={returns}
               fields={fields}
               summaries={summaries}
-              onOpenSettings={() => setSettingsOpen(true)}
             />
-          </div>
+          </section>
         </main>
       </div>
 
