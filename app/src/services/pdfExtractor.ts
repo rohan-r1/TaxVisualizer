@@ -32,6 +32,7 @@ export interface ExtractionResult {
   detected_forms?: string[];
   error?: string;
   form_1040_page?: number;
+  unsupported_year?: boolean;
 }
 
 /**

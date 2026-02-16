@@ -133,6 +133,10 @@ function App() {
       });
 
       if (result.error) {
+        // Show user-friendly message for unsupported years
+        if (result.unsupported_year) {
+          throw new Error(result.error);
+        }
         throw new Error(`PDF extraction failed: ${result.error}`);
       }
 

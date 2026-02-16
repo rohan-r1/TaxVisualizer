@@ -820,6 +820,17 @@ def extract_form_1040(pdf_path: str) -> Dict[str, Any]:
 
         filing_status = detect_filing_status(ocr_results, form_pages)
 
+        # Check year is supported (2020+)
+        if year and year < 2020:
+            return {
+                "error": f"Tax returns from {year} are not supported. This app currently supports tax years 2020 and later.",
+                "year": year,
+                "filing_status": filing_status,
+                "extraction_method": "paddleocr",
+                "fields": [],
+                "unsupported_year": True
+            }
+
         # Extract Form 1040 fields
         progress("PROGRESS:extracting:Form 1040")
         fields = extract_fields(ocr_results, FORM_1040_FIELDS, form_pages)
