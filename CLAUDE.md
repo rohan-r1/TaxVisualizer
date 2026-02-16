@@ -5,6 +5,7 @@ A cross-platform desktop application for individual tax filers to visualize and 
 
 ## Scope
 - Individual filers only (Form 1040 and common schedules)
+- **Tax years 2020 and later** (pre-2020 returns show user-friendly error)
 - Business returns (1120, 1120-S, 1065) are out of scope
 
 ## Platform
@@ -28,7 +29,7 @@ Privacy is the top priority. Every architectural decision defaults to protecting
 ## Architecture
 
 ### Data Flow
-PDF Upload (local) -> PDF Type Detection -> Text Extraction (digital) or OCR API (scanned) -> LLM Validation -> Normalized Schema (SQLite) -> Computed Metrics -> Visualizations (Recharts)
+PDF Upload (local) -> PaddleOCR Extraction -> Math Validation -> Normalized Schema (SQLite) -> Computed Metrics -> Visualizations (Recharts)
 
 ### Tech Stack
 - **Desktop framework:** Tauri v2 (Rust backend, React frontend)
@@ -36,10 +37,9 @@ PDF Upload (local) -> PDF Type Detection -> Text Extraction (digital) or OCR API
 - **Testing:** Vitest + React Testing Library + jsdom (151 tests across 11 files)
 - **Fonts:** Inter (UI), JetBrains Mono (numbers/data)
 - **Database:** SQLite (local, single-file, via tauri-plugin-sql)
-- **PDF text extraction (digital):** Rust PDF libraries (pdf-extract, lopdf) or sidecar Python with pdfplumber
+- **PDF extraction:** Python sidecar with PaddleOCR (works for both digital and scanned PDFs)
 - **PDF viewing:** PDF.js in the React frontend
-- **OCR (scanned PDFs):** Azure Document Intelligence or similar tax-specific API (ephemeral usage)
-- **Validation:** LLM validation layer on all extractions (ephemeral API calls)
+- **Validation:** Local math validation (checks field relationships like AGI = income - adjustments)
 - **Future:** IRS transcript integration, tax software API import, manual entry
 
 ### Data Model
@@ -73,10 +73,9 @@ PDF Upload (local) -> PDF Type Detection -> Text Extraction (digital) or OCR API
 
 ## Key Technical Constraints
 - Desktop app; all data stored locally on user's machine (no server-side storage)
-- API calls for extraction/validation are ephemeral — no user data retained externally
-- Tiered extraction: detect PDF type first, use direct text extraction for digital PDFs, OCR for scans, LLM validation on all
-- Confidence scores per field; items below 95% flagged for user review; target 99%+ accuracy
-- Support 7-10 years of historical returns
+- PaddleOCR runs locally — no cloud API calls for extraction
+- Confidence scores per field from OCR; math validation catches extraction errors
+- Support tax years 2020+ (5 years of history)
 - Computed/derived fields (effective tax rate, etc.) should be recomputable from base data
 - State returns vary significantly; consider starting federal-only
 
@@ -94,12 +93,11 @@ PDF Upload (local) -> PDF Type Detection -> Text Extraction (digital) or OCR API
 - `app/src/db/database.ts` — SQLite access layer (getDb, getAllReturns, insertReturn, deleteReturn, buildSummary)
 - `app/src/db/mockExtraction.ts` — mock extraction with Form 1040 + Schedules A/C/D fields (fallback when sidecar unavailable)
 - `app/src/services/pdfExtractor.ts` — TypeScript service to invoke Python sidecar
-- `app/src-tauri/python/extract.py` — Python sidecar for PDF extraction with pdfplumber
-- `app/src-tauri/python/mappings/` — Year-specific coordinate mappings for Form 1040 + Schedules 1, A, C (2018-2024)
+- `app/src/services/extractionValidator.ts` — Math validation for extracted fields
+- `app/src-tauri/python/extract.py` — Python sidecar for PDF extraction with PaddleOCR
 - `app/src-tauri/python/build.py` — PyInstaller build script for sidecar executable
-- `test-data/generate_sample_returns.py` — Test data generator with multi-year personas and tax calculator
-- `test-data/generated/` — Generated test PDFs and JSON sidecars (alex_chen, maria_garcia personas)
-- `test-data/blank-templates/` — IRS official blank Form 1040 templates (2018-2024)
+- `test-data/manual-returns/alex_chen/` — Hand-filled test PDFs for Alex Chen persona (2020-2024)
+- `test-data/blank-templates/` — IRS official blank Form 1040 templates (2020-2024)
 - `app/src/widgets/registry.ts` — widget registry pattern for extensibility
 - `app/src/widgets/KeyNumbersWidget.tsx` — tabular key numbers display
 - `app/src/widgets/YearOverYearChart.tsx` — YoY line chart
@@ -110,11 +108,11 @@ PDF Upload (local) -> PDF Type Detection -> Text Extraction (digital) or OCR API
 - `app/src/test/fixtures.ts` — shared test data factories (makeReturn, makeField, makeSummary, etc.)
 - `app/src-tauri/src/lib.rs` — Rust backend with SQLite migrations and plugin registration
 - `plans/` — Active execution plans for Linear issues (created by `/plan` command)
-- `plans/archive/` — Completed plans (15 archived)
+- `plans/archive/` — Completed plans (21 archived)
 - `learning-notes/` — Technical explanations for PM education (created by `/learning-opportunity` command)
 
 ## Current Status
-MVP fully functional with real PDF extraction and comprehensive test data infrastructure. Python sidecar (pdfplumber) extracts Form 1040 + Schedule 1, A, C fields (2018-2024) using coordinate-based mapping. Schedule data is extracted and stored but not yet exposed in charts (naming mismatch between TypeScript and Python — plan ready in ROH-36). Test data generator produces multi-year persona sequences with mathematically-correct tax calculations. Two personas available: Alex Chen (7 years) and Maria Garcia (7 years). Cron.com-inspired dark UI with upload button in sidebar. GitHub repo: https://github.com/rohan-r1/TaxVisualizer
+MVP fully functional with PaddleOCR-based PDF extraction. Python sidecar extracts Form 1040 + Schedule 1, 2, A, C fields using label-based OCR matching. Math validation catches extraction errors by checking field relationships (e.g., AGI = total income - adjustments). Supports tax years 2020+ only. Test data available: Alex Chen persona with hand-filled PDFs (2020-2024). Cron.com-inspired dark UI with collapsible sidebar and full-height chatbot panel. GitHub repo: https://github.com/rohan-r1/TaxVisualizer
 
 ### Active Issues
 - **ROH-36:** Add schedule data to charts — plan ready, needs `/execute`
@@ -124,9 +122,7 @@ MVP fully functional with real PDF extraction and comprehensive test data infras
 ## Next Steps
 1. **ROH-36:** Execute plan to expose schedule data in charts (fix naming mismatch in `chart.ts` and `claude.ts`)
 2. **ROH-31:** Standardize typography — audit and unify font usage (Inter for UI, JetBrains Mono for numbers/data)
-3. **ROH-22:** Review which extracted fields to display in summary
-4. **Confidence/Review Flow** — Flag low-confidence fields for user correction
-5. **ROH-15:** Monitor for official SQLCipher support, then implement encryption
+3. **ROH-15:** Monitor for official SQLCipher support, then implement encryption
 
 ## Git Commits
 - Do NOT include `Co-Authored-By` lines in commit messages
