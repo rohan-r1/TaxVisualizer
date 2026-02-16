@@ -1112,3 +1112,144 @@
   background: var(--bg-hover);
   color: var(--text-primary);
 }
+
+/* Validation status section */
+.validation-status {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.validation-status-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.5rem 0;
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: opacity 0.12s;
+}
+
+.validation-status-header:disabled {
+  cursor: default;
+}
+
+.validation-status-header:not(:disabled):hover {
+  opacity: 0.8;
+}
+
+.validation-status-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.validation-status-label {
+  flex: 1;
+}
+
+.validation-chevron {
+  display: flex;
+  align-items: center;
+  transition: transform 0.2s;
+}
+
+.validation-chevron.expanded {
+  transform: rotate(180deg);
+}
+
+/* Validation status colors */
+.validation-status-passed .validation-status-icon {
+  color: #4ade80;
+}
+
+.validation-status-passed .validation-status-label {
+  color: #4ade80;
+}
+
+.validation-status-warnings .validation-status-icon {
+  color: #fbbf24;
+}
+
+.validation-status-warnings .validation-status-label {
+  color: #fbbf24;
+}
+
+.validation-status-errors .validation-status-icon {
+  color: #ef4444;
+}
+
+.validation-status-errors .validation-status-label {
+  color: #ef4444;
+}
+
+/* Validation issues list */
+.validation-issues-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.validation-issue {
+  padding: 0.75rem;
+  border-radius: 6px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+}
+
+.validation-issue-warning {
+  border-left: 3px solid #fbbf24;
+}
+
+.validation-issue-error {
+  border-left: 3px solid #ef4444;
+}
+
+.validation-issue-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.375rem;
+}
+
+.validation-issue-icon {
+  display: flex;
+  align-items: center;
+}
+
+.validation-issue-warning .validation-issue-icon {
+  color: #fbbf24;
+}
+
+.validation-issue-error .validation-issue-icon {
+  color: #ef4444;
+}
+
+.validation-issue-field {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.validation-issue-message {
+  margin: 0 0 0.25rem 0;
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+
+.validation-issue-detail {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+}

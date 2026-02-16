@@ -23,6 +23,10 @@ import {
   type ExtractionResult,
   type ExtractionProgress,
 } from "./services/pdfExtractor";
+import {
+  validateExtraction,
+  type ValidationResult,
+} from "./services/extractionValidator";
 import type { TaxReturn, ExtractedField, ReturnSummary } from "./types/tax";
 import type { ChartConfig } from "./types/chart";
 import "./App.css";
@@ -32,6 +36,7 @@ interface PendingUpload {
   path: string;
   filename: string;
   result: ExtractionResult;
+  validationResult: ValidationResult;
 }
 
 /** Build field counts per detected form for the upload summary */
@@ -131,8 +136,20 @@ function App() {
         throw new Error(`PDF extraction failed: ${result.error}`);
       }
 
+      // Run validation on extracted data
+      const validationResult = validateExtraction(result);
+
+      // Apply confidence updates to fields if validation found issues
+      if (validationResult.fieldUpdates.size > 0) {
+        result.fields = result.fields.map((f) => ({
+          ...f,
+          confidence:
+            validationResult.fieldUpdates.get(f.key) ?? f.confidence,
+        }));
+      }
+
       // Show upload summary overlay for user confirmation
-      setPendingUpload({ path, filename, result });
+      setPendingUpload({ path, filename, result, validationResult });
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       setError(msg);
@@ -308,6 +325,7 @@ function App() {
           year={pendingUpload.result.year}
           filingStatus={pendingUpload.result.filing_status}
           formFieldCounts={buildFormFieldCounts(pendingUpload.result)}
+          validationResult={pendingUpload.validationResult}
           onContinue={handleConfirmUpload}
           onReUpload={handleCancelUpload}
         />
