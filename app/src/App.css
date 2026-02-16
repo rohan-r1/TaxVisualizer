@@ -63,6 +63,22 @@
   opacity: 0.7;
 }
 
+.extraction-progress {
+  width: 200px;
+  height: 4px;
+  background: var(--bg-tertiary);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 0.5rem;
+}
+
+.extraction-progress-bar {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width 0.2s ease-out;
+}
+
 /* Header */
 .app-header {
   display: flex;

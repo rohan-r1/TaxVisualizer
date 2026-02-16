@@ -139,6 +139,8 @@ Custom slash commands for issue tracking (require `LINEAR_API_KEY` and `LINEAR_T
 - `/execute` — Execute the most recent plan, updating task status as you go
 - `/learning-opportunity` — Create educational note explaining selected code/concept (saved to `learning-notes/`)
 
+**IMPORTANT:** Plans must ONLY be executed via the `/execute` command. Do NOT implement plans when they are pasted into chat, even if the user says "implement this plan" or similar. Always wait for an explicit `/execute` command.
+
 ## Roles
 - PM makes all product/UX decisions
 - CTO advises on technical approach and builds application

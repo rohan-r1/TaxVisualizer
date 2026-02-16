@@ -21,6 +21,7 @@ import {
   extractPdf,
   checkSidecarAvailable,
   type ExtractionResult,
+  type ExtractionProgress,
 } from "./services/pdfExtractor";
 import type { TaxReturn, ExtractedField, ReturnSummary } from "./types/tax";
 import type { ChartConfig } from "./types/chart";
@@ -41,6 +42,7 @@ function buildFormFieldCounts(result: ExtractionResult): FormFieldCount[] {
   // Map category prefixes to form names
   const categoryToForm: Record<string, string> = {
     schedule_1: "Schedule 1",
+    schedule_2: "Schedule 2",
     schedule_a: "Schedule A",
     schedule_c: "Schedule C",
   };
@@ -74,6 +76,8 @@ function App() {
   const [summaries, setSummaries] = useState<ReturnSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [extracting, setExtracting] = useState(false);
+  const [extractionProgress, setExtractionProgress] =
+    useState<ExtractionProgress | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [sidecarAvailable, setSidecarAvailable] = useState<boolean | null>(null);
@@ -109,6 +113,7 @@ function App() {
     try {
       setError(null);
       setExtracting(true);
+      setExtractionProgress(null);
 
       // Require sidecar for PDF extraction
       if (!sidecarAvailable) {
@@ -118,7 +123,9 @@ function App() {
       }
 
       console.log("Using Python sidecar for PDF extraction");
-      const result = await extractPdf(path);
+      const result = await extractPdf(path, (progress) => {
+        setExtractionProgress(progress);
+      });
 
       if (result.error) {
         throw new Error(`PDF extraction failed: ${result.error}`);
@@ -131,6 +138,7 @@ function App() {
       setError(msg);
     } finally {
       setExtracting(false);
+      setExtractionProgress(null);
     }
   };
 
@@ -231,8 +239,19 @@ function App() {
       <div className="app-loading">
         <span>Extracting PDF...</span>
         <span className="loading-subtext">
-          Analyzing form fields with pdfplumber
+          {extractionProgress?.message || "Initializing OCR..."}
         </span>
+        {extractionProgress?.current !== undefined &&
+          extractionProgress?.total !== undefined && (
+            <div className="extraction-progress">
+              <div
+                className="extraction-progress-bar"
+                style={{
+                  width: `${(extractionProgress.current / extractionProgress.total) * 100}%`,
+                }}
+              />
+            </div>
+          )}
       </div>
     );
   }
