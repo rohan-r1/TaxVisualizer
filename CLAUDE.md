@@ -108,16 +108,16 @@ PDF Upload (local) -> PaddleOCR Extraction -> Math Validation -> Normalized Sche
 - `app/src/test/fixtures.ts` — shared test data factories (makeReturn, makeField, makeSummary, etc.)
 - `app/src-tauri/src/lib.rs` — Rust backend with SQLite migrations and plugin registration
 - `plans/` — Active execution plans for Linear issues (created by `/plan` command)
-- `plans/archive/` — Completed plans (21 archived)
+- `plans/archive/` — Completed plans (22 archived)
 - `learning-notes/` — Technical explanations for PM education (created by `/learning-opportunity` command)
 
 ## Current Status
-MVP fully functional with PaddleOCR-based PDF extraction. Python sidecar extracts Form 1040 + Schedule 1, 2, A, C fields using label-based OCR matching. Math validation catches extraction errors by checking field relationships (e.g., AGI = total income - adjustments). Supports tax years 2020+ only. Test data available: Alex Chen persona with hand-filled PDFs (2020-2024). Cron.com-inspired dark UI with collapsible sidebar and full-height chatbot panel. GitHub repo: https://github.com/rohan-r1/TaxVisualizer
+MVP fully functional with PaddleOCR-based PDF extraction. Python sidecar uses OCR label matching (no brittle coordinate mappings) to extract Form 1040 + Schedule 1, 2, A, C fields. Math validation (ROH-39 complete) catches extraction errors by checking field relationships. Supports tax years 2020+ only; pre-2020 returns show user-friendly error. Test data: Alex Chen persona with hand-filled PDFs (2020-2024). Upload summary overlay shows extraction results. Cron.com-inspired dark UI with collapsible sidebar and full-height chatbot panel. GitHub repo: https://github.com/rohan-r1/TaxVisualizer
 
 ### Active Issues
 - **ROH-36:** Add schedule data to charts — plan ready, needs `/execute`
-- **ROH-15:** Encryption at rest — deferred (waiting for official SQLCipher support in tauri-plugin-sql)
 - **ROH-31:** Make fonts and font sizes uniform across the application (Medium priority)
+- **ROH-15:** Encryption at rest — deferred (waiting for official SQLCipher support in tauri-plugin-sql)
 
 ## Next Steps
 1. **ROH-36:** Execute plan to expose schedule data in charts (fix naming mismatch in `chart.ts` and `claude.ts`)

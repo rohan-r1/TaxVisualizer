@@ -1,5 +1,7 @@
 # PDF extraction dependencies
-pdfplumber>=0.10.0
+paddleocr>=2.7.0
+paddlepaddle>=2.5.0
+PyMuPDF>=1.23.0
 
 # For building standalone executable
 pyinstaller>=6.0.0

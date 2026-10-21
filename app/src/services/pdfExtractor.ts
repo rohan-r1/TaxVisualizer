@@ -227,17 +227,28 @@ export async function extractPdf(
 
 /**
  * Check if the extraction sidecar is available and working.
+ * Retries up to 3 times with delays to handle the slow first-launch
+ * extraction of the PyInstaller onefile binary (~260MB).
  *
  * @returns true if the sidecar is available
  */
 export async function checkSidecarAvailable(): Promise<boolean> {
-  try {
-    // Try a simple extraction with no file to see if sidecar responds
-    const command = Command.sidecar("binaries/extract", ["--help"]);
-    const output = await command.execute();
-    // If it exits (even with error code), sidecar is available
-    return output.code === 0 || output.code === 1;
-  } catch {
-    return false;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      const command = Command.sidecar("binaries/extract", ["--help"]);
+      const output = await command.execute();
+      if (output.code === 0 || output.code === 1) {
+        return true;
+      }
+    } catch (error) {
+      console.warn(
+        `Sidecar check attempt ${attempt + 1}/3 failed:`,
+        error
+      );
+    }
+    if (attempt < 2) {
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+    }
   }
+  return false;
 }

@@ -237,13 +237,18 @@ describe("pdfExtractor", () => {
     });
 
     it("should return false when sidecar is not available", async () => {
+      vi.useFakeTimers();
       (Command.sidecar as ReturnType<typeof vi.fn>).mockImplementation(() => {
         throw new Error("Sidecar not found");
       });
 
-      const available = await checkSidecarAvailable();
+      const promise = checkSidecarAvailable();
+      await vi.advanceTimersByTimeAsync(5000);
+      await vi.advanceTimersByTimeAsync(5000);
+      const available = await promise;
 
       expect(available).toBe(false);
+      vi.useRealTimers();
     });
   });
 });

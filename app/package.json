@@ -9,7 +9,9 @@
     "preview": "vite preview",
     "tauri": "tauri",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "build:sidecar": "python src-tauri/python/build.py",
+    "setup": "npm install && python src-tauri/python/build.py"
   },
   "dependencies": {
     "@tauri-apps/api": "^2",

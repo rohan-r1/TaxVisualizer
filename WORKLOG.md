@@ -1,5 +1,36 @@
 # Work Log
 
+## 2026-02-16 (Session 2)
+
+### Work Done
+- **Major: Replaced coordinate-based extraction with PaddleOCR** (ROH-39)
+  - Rewrote `app/src-tauri/python/extract.py` to use PaddleOCR with label-based matching
+  - Works for both digital and scanned PDFs (no more brittle coordinate mappings)
+  - Deleted all 28 coordinate mapping files (moved to `mappings_archive/` untracked)
+  - Much more robust - matches IRS form labels to find field values
+- **Added math validation for PDF extraction**
+  - New `app/src/services/extractionValidator.ts` — validates field relationships (e.g., AGI = income - adjustments)
+  - 323 lines of tests in `extractionValidator.test.ts`
+  - Catches extraction errors before storing data
+- **Dropped 2018-2019 support** — simplified scope to 2020+ only
+  - Deleted all pre-2020 test data and blank templates
+  - Added user-friendly error message for pre-2020 returns
+- **Added upload summary overlay** — shows extraction results to user after upload
+  - New component: `app/src/components/UploadSummary/UploadSummaryOverlay.tsx`
+- **Archived 6 completed plans** — total now 22 in `plans/archive/`
+
+### Decisions Made
+- PaddleOCR label matching is more maintainable than year-specific coordinate mappings
+- Dropping pre-2020 support reduces complexity (different form layouts, postcard format)
+- Math validation is first line of defense against OCR errors (before LLM validation)
+
+### Next Steps
+- `/execute` ROH-36 to enable schedule data in charts
+- ROH-31: Standardize typography (Inter for UI, JetBrains Mono for numbers)
+- ROH-15: Monitor for SQLCipher support
+
+---
+
 ## 2026-02-15
 
 ### Work Done

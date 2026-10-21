@@ -120,8 +120,13 @@ function App() {
       setExtracting(true);
       setExtractionProgress(null);
 
-      // Require sidecar for PDF extraction
-      if (!sidecarAvailable) {
+      // Require sidecar for PDF extraction — re-check if initially unavailable
+      let available = sidecarAvailable;
+      if (!available) {
+        available = await checkSidecarAvailable();
+        setSidecarAvailable(available);
+      }
+      if (!available) {
         throw new Error(
           "PDF extraction unavailable. Please build the Python sidecar: cd app/src-tauri/python && python build.py"
         );
